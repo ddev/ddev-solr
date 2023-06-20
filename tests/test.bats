@@ -12,7 +12,7 @@ setup() {
 }
 
 health_checks() {
-  ddev exec "curl -s http://ddev-shop2-solr:8983/solr/# | grep Admin"
+  ddev exec "curl -s http://ddev-${PROJNAME}-solr:8983/solr/# | grep Admin"
 }
 
 teardown() {
@@ -34,8 +34,8 @@ teardown() {
 @test "install from release" {
   set -eu -o pipefail
   cd ${TESTDIR} || ( printf "unable to cd to ${TESTDIR}\n" && exit 1 )
-  echo "# ddev get ddev/ddev-solr with project ${PROJNAME} in ${TESTDIR} ($(pwd))" >&3
-  ddev get ddev/ddev-solr
+  echo "# ddev get mkalkbrenner/ddev-solr with project ${PROJNAME} in ${TESTDIR} ($(pwd))" >&3
+  ddev get mkalkbrenner/ddev-solr
   ddev restart >/dev/null
   health_checks
 }
