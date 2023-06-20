@@ -98,8 +98,8 @@ runs a single Solr node.
    * Username: `solr`
    * Password: `SolrRocks`
 3. Press the `Upload Configset` button on the server's view and check the "Upload (and overwrite) configset" checkbox.
-4. Set the number of shards to `1`.
+4. Set the number of shards to `1.
 5. Press `Upload`.
 
 
-**Contributed and maintained by [@mkalkbrenner](https://github.com/mkalkbrenner)
+**Contributed and maintained by [@mkalkbrenner](https://github.com/mkalkbrenner)**
