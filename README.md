@@ -8,44 +8,98 @@
 
 ## What is ddev-solr?
 
-This repository is a template for providing [DDEV](https://ddev.readthedocs.io) add-ons and services.
+ddev-solr provides Solr (Cloud) using a single Solr node, which is sufficient
+for local development requirements.
 
-In DDEV addons can be installed from the command line using the `ddev get` command, for example, `ddev get ddev/ddev-solr` or `ddev get ddev/ddev-drupal9-solr`.
+Solr Cloud provides a lot of APIs to manage your collections, cores, schemas
+etc. Some of these APIs require a so-called "trusted" context. Solr therefore
+supports different technologies for authentication and authorization. The
+easiest one to configure is "Basic Authentication". This DDEV service comes with
+a simple pre-configured `security.json` to provide such a trusted context based
+on basic authentication. It creates a single administrative account having full
+access rights:
+* user: `solr`
+* password: `SolrRocks`
 
-A repository like this one is the way to get started. You can create a new repo from this one by clicking the template button in the top right corner of the page.
+Once up and running you can access Solr's UI within your browser by opening
+`http://<projectname>.ddev.site:8983`. For example, if the project is named
+"myproject" the hostname will be `http://myproject.ddev.site:8983`. To access
+the Solr container from the web container use `http://ddev-<project>-solr:8983`.
 
-![template button](images/template-button.png)
+Solr Cloud depends on Zookeeper to share configurations between the Solr nodes.
+Therefore, this service starts a single Zookeeper server on port 2181, too.
 
-## Components of the repository
+## Solarium
 
-* The fundamental contents of the add-on service or other component. For example, in this template there is a [docker-compose.solr.yaml](docker-compose.solr.yaml) file.
-* An [install.yaml](install.yaml) file that describes how to install the service or other component.
-* A test suite in [test.bats](tests/test.bats) that makes sure the service continues to work as expected.
-* [Github actions setup](.github/workflows/tests.yml) so that the tests run automatically when you push to the repository.
+[Solarium](https://github.com/solariumphp/solarium) is the leading Solr
+integration library for PHP. It is used by the modules and integrations of many
+PHP frameworks and CMS like Drupal, Typo3, Wordpress, Symfony, Laravel, ...
+If you build your own PHP application and want to use Solarium directly, here is
+an example of how to configure the connection in DDEV.
 
-## Getting started
+```php
+use Solarium\Core\Client\Adapter\Curl;
+use Symfony\Component\EventDispatcher\EventDispatcher;
 
-1. Choose a good descriptive name for your add-on. It should probably start with "ddev-" and include the basic service or functionality. If it's particular to a specific CMS, perhaps `ddev-<CMS>-servicename`.
-2. Create the new template repository by using the template button.
-3. Globally replace "solr" with the name of your add-on.
-4. Add the files that need to be added to a ddev project to the repository. For example, you might remove `docker-compose.solr.yaml` with the `docker-compose.*.yaml` for your recipe.
-5. Update the install.yaml to give the necessary instructions for installing the add-on.
+$adapter = new Curl();
+$eventDispatcher = new EventDispatcher();
+$config = [
+    'endpoint' => [
+        'localhost' => [
+            // Replace <project> by your project's name:
+            'host' => 'ddev-<project>-solr',
+            'port' => 8983,
+            'path' => '/',
+            // Use your collection name here:
+            'collection' => 'techproducts',
+            'username' => 'solr',
+            'password' => 'SolrRocks',
+        )
+    )
+);
 
-   * The fundamental line is the `project_files` directive, a list of files to be copied from this repo into the project `.ddev` directory.
-   * You can optionally add files to the `global_files` directive as well, which will cause files to be placed in the global `.ddev` directory, `~/.ddev`.
-   * Finally, `pre_install_commands` and `post_install_commands` are supported. These can use the host-side environment variables documented [in ddev docs](https://ddev.readthedocs.io/en/stable/users/extend/custom-commands/#environment-variables-provided).
+$client = new Solarium\Client($adapter, $eventDispatcher, $config);
+```
 
-6. Update `tests/test.bats` to provide a reasonable test for your repository. Tests are triggered either by manually executing `bats ./tests/test.bat`, automatically on every push to the repository, or periodically each night. Please make sure to attend to test failures when they happen. Others will be depending on you. `bats` is a simple testing framework that just uses `bash`. To run a Bats test locally, you have to [install bats-core](https://bats-core.readthedocs.io/en/stable/installation.html) first. Then you download your add-on, and finally run `bats ./tests/test.bats` within the root of the uncompressed directory. To learn more about Bats see the [documentation](https://bats-core.readthedocs.io/en/stable/).
-7. When everything is working, including the tests, you can push the repository to GitHub.
-8. Create a release on GitHub.
-9. Test manually with `ddev get <owner/repo>`.
-10. You can test PRs with `ddev get https://github.com/<user>/<repo>/tarball/<branch>`
-11. Update the README.md to describe the add-on, how to use it, and how to contribute. If there are any manual actions that have to be taken, please explain them. If it requires special configuration of the using project, please explain how to do those. Examples in [ddev/ddev-drupal9-solr](https://github.com/ddev/ddev-drupal9-solr), [ddev/ddev-memcached](github.com/ddev/ddev-memcached), and [ddev/ddev-beanstalkd](https://github.com/ddev/ddev-beanstalkd).
-12. Add a good short description to your repo, and add the label "ddev-get". It will immediately be added to the list provided by `ddev get --list --all`.
-13. When it has matured you will hopefully want to have it become an "official" maintained add-on. Open an issue in the [ddev queue](https://github.com/ddev/ddev/issues) for that.
+## Drupal and Search API Solr (>= 4.2.1)
 
-Note that more advanced techniques are discussed in [DDEV docs](https://ddev.readthedocs.io/en/latest/users/extend/additional-services/#additional-service-configurations-and-add-ons-for-ddev).
+For Drupal and Search API Solr you need to configure a Search API server using
+Solr as backend and `Solr Cloud with Basic Auth` as its connector. As mentioned
+above, username "solr" and password "SolrRocks" are the pre-configured
+credentials for Basic Authentication in `.ddev/solr/security.json`.
 
-**Contributed and maintained by [@CONTRIBUTOR](https://github.com/CONTRIBUTOR) based on the original [ddev-contrib recipe](https://github.com/ddev/ddev-contrib/tree/master/docker-compose-services/RECIPE) by [@CONTRIBUTOR](https://github.com/CONTRIBUTOR)**
+Solr requires a Drupal-specific configset for any collection that should be used
+to index Drupal's content. (In Solr Cloud "collections" are the equivalent to
+"cores" in classic Solr installations. Actually, in a big Solr Cloud installation
+a collection might consist of multiple cores across all Solr Cloud nodes.)
 
-**Originally Contributed by [somebody](https://github.com/somebody) in <https://github.com/ddev/ddev-contrib/>
+Starting from Search API Solr module version 4.2.1 you don't need to deal with
+configsets manually anymore. Just enable the `search_api_solr_admin` sub-module
+which is part of Search API Solr. Now you create or update your "collections" at
+any time by clicking the "Upload Configset" button on the Search API server
+details page (see instAllation steps below), or automate things using
+```
+ddev drush --numShards=1 search-api-solr:upload-configset SEARCH_API_SERVER_ID
+```
+
+Note: `SEARCH_API_SERVER_ID` is the machine name of your Search API server.
+The number of "shards" should always be "1" as this local installation only
+runs a single Solr node.
+
+### Installation steps
+
+1. Enable the `search_api_solr_admin` module. (This sub-module is included in Search API Solr >= 4.2.1)
+2. Create a search server using the Solr backend and select `Solr Cloud with Basic Auth` as connector:
+   * HTTP protocol: `http`
+   * Solr node: `ddev-<project>-solr` (Replace <project> by your project's name.)
+   * Solr port: `8983`
+   * Solr path: `/`
+   * Default Solr collection: `techproducts` (You can define any name here. The collection will be created automatically.)
+   * Username: `solr`
+   * Password: `SolrRocks`
+3. Press the `Upload Configset` button on the server's view and check the "Upload (and overwrite) configset" checkbox.
+4. Set the number of shards to _1_.
+5. Press `Upload`.
+
+
+**Contributed and maintained by [@CONTRIBUTOR](https://github.com/mkalkbrenner)
