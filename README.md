@@ -1,16 +1,16 @@
-[![tests](https://github.com/ddev/ddev-addon-template/actions/workflows/tests.yml/badge.svg)](https://github.com/ddev/ddev-addon-template/actions/workflows/tests.yml) ![project is maintained](https://img.shields.io/maintenance/yes/2024.svg)
+[![tests](https://github.com/ddev/ddev-solr/actions/workflows/tests.yml/badge.svg)](https://github.com/ddev/ddev-solr/actions/workflows/tests.yml) ![project is maintained](https://img.shields.io/maintenance/yes/2024.svg)
 
-# ddev-addon-template <!-- omit in toc -->
+# ddev-solr <!-- omit in toc -->
 
-* [What is ddev-addon-template?](#what-is-ddev-addon-template)
+* [What is ddev-solr?](#what-is-ddev-solr)
 * [Components of the repository](#components-of-the-repository)
 * [Getting started](#getting-started)
 
-## What is ddev-addon-template?
+## What is ddev-solr?
 
 This repository is a template for providing [DDEV](https://ddev.readthedocs.io) add-ons and services.
 
-In DDEV addons can be installed from the command line using the `ddev get` command, for example, `ddev get ddev/ddev-addon-template` or `ddev get ddev/ddev-drupal9-solr`.
+In DDEV addons can be installed from the command line using the `ddev get` command, for example, `ddev get ddev/ddev-solr` or `ddev get ddev/ddev-drupal9-solr`.
 
 A repository like this one is the way to get started. You can create a new repo from this one by clicking the template button in the top right corner of the page.
 
@@ -18,7 +18,7 @@ A repository like this one is the way to get started. You can create a new repo 
 
 ## Components of the repository
 
-* The fundamental contents of the add-on service or other component. For example, in this template there is a [docker-compose.addon-template.yaml](docker-compose.addon-template.yaml) file.
+* The fundamental contents of the add-on service or other component. For example, in this template there is a [docker-compose.solr.yaml](docker-compose.solr.yaml) file.
 * An [install.yaml](install.yaml) file that describes how to install the service or other component.
 * A test suite in [test.bats](tests/test.bats) that makes sure the service continues to work as expected.
 * [Github actions setup](.github/workflows/tests.yml) so that the tests run automatically when you push to the repository.
@@ -27,8 +27,8 @@ A repository like this one is the way to get started. You can create a new repo 
 
 1. Choose a good descriptive name for your add-on. It should probably start with "ddev-" and include the basic service or functionality. If it's particular to a specific CMS, perhaps `ddev-<CMS>-servicename`.
 2. Create the new template repository by using the template button.
-3. Globally replace "addon-template" with the name of your add-on.
-4. Add the files that need to be added to a ddev project to the repository. For example, you might remove `docker-compose.addon-template.yaml` with the `docker-compose.*.yaml` for your recipe.
+3. Globally replace "solr" with the name of your add-on.
+4. Add the files that need to be added to a ddev project to the repository. For example, you might remove `docker-compose.solr.yaml` with the `docker-compose.*.yaml` for your recipe.
 5. Update the install.yaml to give the necessary instructions for installing the add-on.
 
    * The fundamental line is the `project_files` directive, a list of files to be copied from this repo into the project `.ddev` directory.
