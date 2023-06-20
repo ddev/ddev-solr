@@ -27,6 +27,11 @@ teardown() {
   cd ${TESTDIR}
   echo "# ddev get ${DIR} with project ${PROJNAME} in ${TESTDIR} ($(pwd))" >&3
   ddev get ${DIR}
+
+  # ASSERT: required files exist
+  assert_exist "${TESTDIR}/.ddev/docker-compose.solr.yaml"
+  assert_exist "${TESTDIR}/.ddev/solr/security.json"
+
   ddev restart
   health_checks
 }
@@ -36,6 +41,11 @@ teardown() {
   cd ${TESTDIR} || ( printf "unable to cd to ${TESTDIR}\n" && exit 1 )
   echo "# ddev get ddev/ddev-solr with project ${PROJNAME} in ${TESTDIR} ($(pwd))" >&3
   ddev get mkalkbrenner/ddev-solr
+
+  # ASSERT: required files exist
+  assert_exist "${TESTDIR}/.ddev/docker-compose.solr.yaml"
+  assert_exist "${TESTDIR}/.ddev/solr/security.json"
+
   ddev restart >/dev/null
   health_checks
 }

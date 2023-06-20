@@ -4,7 +4,7 @@
 
 * [What is ddev-solr?](#what-is-ddev-solr)
 * [Solarium](#solarium)
-* [Getting started](#drupal-and-search-api-solr)
+* [Drupal and Search API Solr](#drupal-and-search-api-solr)
 
 ## What is ddev-solr?
 
@@ -102,4 +102,4 @@ runs a single Solr node.
 5. Press `Upload`.
 
 
-**Contributed and maintained by [@CONTRIBUTOR](https://github.com/mkalkbrenner)
+**Contributed and maintained by [@mkalkbrenner](https://github.com/mkalkbrenner)
