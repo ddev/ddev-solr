@@ -1,10 +1,10 @@
-[![tests](https://github.com/ddev/ddev-solr/actions/workflows/tests.yml/badge.svg)](https://github.com/ddev/ddev-solr/actions/workflows/tests.yml) ![project is maintained](https://img.shields.io/maintenance/yes/2024.svg)
+[![tests](https://github.com/mkalkbrenner/ddev-solr/actions/workflows/tests.yml/badge.svg)](https://github.com/mkalkbrenner/ddev-solr/actions/workflows/tests.yml) ![project is maintained](https://img.shields.io/maintenance/yes/2024.svg)
 
 # ddev-solr <!-- omit in toc -->
 
 * [What is ddev-solr?](#what-is-ddev-solr)
-* [Components of the repository](#components-of-the-repository)
-* [Getting started](#getting-started)
+* [Solarium](#solarium)
+* [Getting started](#drupal-and-search-api-solr)
 
 ## What is ddev-solr?
 
@@ -61,7 +61,7 @@ $config = [
 $client = new Solarium\Client($adapter, $eventDispatcher, $config);
 ```
 
-## Drupal and Search API Solr (>= 4.2.1)
+## Drupal and Search API Solr
 
 For Drupal and Search API Solr you need to configure a Search API server using
 Solr as backend and `Solr Cloud with Basic Auth` as its connector. As mentioned
