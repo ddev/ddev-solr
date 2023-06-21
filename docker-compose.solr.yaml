@@ -21,14 +21,14 @@
 #      - press the "Upload Configset" button.
 #      - set the number of shards to "1" and press "Upload"
 
-version: '3.6'
+#ddev-generated
+
 services:
   solr:
-    image: solr:8.11.2
+    image: solr:8.11
     container_name: ddev-${DDEV_SITENAME}-solr
     expose:
       - 8983
-    # These labels ensure this service is discoverable by ddev.
     labels:
       com.ddev.site-name: ${DDEV_SITENAME}
       com.ddev.approot: $DDEV_APPROOT
