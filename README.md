@@ -91,7 +91,7 @@ runs a single Solr node.
 1. Enable the `search_api_solr_admin` module. (This sub-module is included in Search API Solr >= 4.2.1)
 2. Create a search server using the Solr backend and select `Solr Cloud with Basic Auth` as connector:
    * HTTP protocol: `http`
-   * Solr node: `ddev-<project>-solr` (Replace <project> by your project's name.)
+   * Solr node: `solr`
    * Solr port: `8983`
    * Solr path: `/`
    * Default Solr collection: `techproducts` (You can define any name here. The collection will be created automatically.)
