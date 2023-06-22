@@ -2,9 +2,11 @@
 
 # ddev-solr <!-- omit in toc -->
 
-* [What is ddev-solr?](#what-is-ddev-solr)
-* [Solarium](#solarium)
-* [Drupal and Search API Solr](#drupal-and-search-api-solr)
+- [What is ddev-solr?](#what-is-ddev-solr)
+- [Getting started](#getting-started)
+- [Solarium](#solarium)
+- [Drupal and Search API Solr](#drupal-and-search-api-solr)
+    - [Installation steps](#installation-steps)
 
 ## What is ddev-solr?
 
@@ -18,13 +20,29 @@ easiest one to configure is "Basic Authentication". This DDEV service comes with
 a simple pre-configured `security.json` to provide such a trusted context based
 on basic authentication. It creates a single administrative account having full
 access rights:
-* user: `solr`
-* password: `SolrRocks`
 
-Once up and running you can access Solr's UI within your browser by opening
+- user: `solr`
+- password: `SolrRocks`
+
+## Getting started
+
+1. Install the addon
+
+    ```shell
+    ddev get mkalkbrenner/ddev-solr
+    ```
+
+1. Restart DDEV to start the addon.
+
+   ```shell
+   ddev restart
+   ```
+
+Once up and running, access Solr's UI within your browser by opening
 `http://<projectname>.ddev.site:8983`. For example, if the project is named
-"myproject" the hostname will be `http://myproject.ddev.site:8983`. To access
-the Solr container from the web container use `http://ddev-<project>-solr:8983`.
+"myproject" the hostname will be `http://myproject.ddev.site:8983`.
+
+To access the Solr container from the web container use `http://ddev-<projectname>-solr:8983`.
 
 Solr Cloud depends on Zookeeper to share configurations between the Solr nodes.
 Therefore, this service starts a single Zookeeper server on port 2181, too.
@@ -78,6 +96,7 @@ configsets manually anymore. Just enable the `search_api_solr_admin` sub-module
 which is part of Search API Solr. Now you create or update your "collections" at
 any time by clicking the "Upload Configset" button on the Search API server
 details page (see instAllation steps below), or automate things using
+
 ```
 ddev drush --numShards=1 search-api-solr:upload-configset SEARCH_API_SERVER_ID
 ```
@@ -90,16 +109,15 @@ runs a single Solr node.
 
 1. Enable the `search_api_solr_admin` module. (This sub-module is included in Search API Solr >= 4.2.1)
 2. Create a search server using the Solr backend and select `Solr Cloud with Basic Auth` as connector:
-   * HTTP protocol: `http`
-   * Solr node: `ddev-<project>-solr` (Replace <project> by your project's name.)
-   * Solr port: `8983`
-   * Solr path: `/`
-   * Default Solr collection: `techproducts` (You can define any name here. The collection will be created automatically.)
-   * Username: `solr`
-   * Password: `SolrRocks`
+   - HTTP protocol: `http`
+   - Solr node: `ddev-<project>-solr` (Replace <project> by your project's name.)
+   - Solr port: `8983`
+   - Solr path: `/`
+   - Default Solr collection: `techproducts` (You can define any name here. The collection will be created automatically.)
+   - Username: `solr`
+   - Password: `SolrRocks`
 3. Press the `Upload Configset` button on the server's view and check the "Upload (and overwrite) configset" checkbox.
 4. Set the number of shards to `1.
 5. Press `Upload`.
-
 
 **Contributed and maintained by [@mkalkbrenner](https://github.com/mkalkbrenner)**
