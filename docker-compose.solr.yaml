@@ -1,26 +1,3 @@
-# DDev Solr Cloud service file.
-#
-# This is a variation of docker-compose.solr.yaml that only creates one Solr node and runs a single zookeeper in
-# standalone mode. This setup is not recommended for a production environment but requires less ressources in a
-# development environment.
-#
-# To access Solr after it is installed:
-# - The Solr admin interface will be accessible at:
-#   http://<projectname>.ddev.site:8983
-#   For example, if the project is named "myproject" the hostname will be:
-#   http://myproject.ddev.site:8983
-# - To access the Solr container from the web container use:
-#   ddev-<project>-solr:8983
-#
-# To use this in your own project:
-# 1. Copy this file and the solr (including security.json) directory to your project's ".ddev" directory.
-# 2. For Drupal:
-#      - enable the search_api_solr_admin (this sub-module included in Search API Solr >= 4.2.1)
-#      - create a search server using the Solr Cloud Connector with Basic Auth using username "solr" and password
-#        "SolrRocks".
-#      - press the "Upload Configset" button.
-#      - set the number of shards to "1" and press "Upload"
-
 #ddev-generated
 
 services:
@@ -68,9 +45,6 @@ services:
       - .:/mnt/ddev_config
       - zoo:/bitnami/zookeeper
 
-  # This links the Solr service to the web service defined in the main
-  # docker-compose.yml, allowing applications running inside the web container to
-  # access the Solr service at http://solr:8983
   web:
     links:
       - solr:solr
