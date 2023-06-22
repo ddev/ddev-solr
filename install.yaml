@@ -3,6 +3,7 @@ name: solr
 pre_install_actions:
 
 project_files:
+- commands
 - docker-compose.solr.yaml
 - solr
 
