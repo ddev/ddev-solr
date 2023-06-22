@@ -1,13 +1,6 @@
 name: solr
 
-pre_install_actions:
-
 project_files:
+- commands/solr/solr
 - docker-compose.solr.yaml
-- solr
-
-global_files:
-
-post_install_actions:
-
-yaml_read_files:
+- solr/security.json
