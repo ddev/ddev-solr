@@ -2,9 +2,10 @@
 
 # ddev-solr <!-- omit in toc -->
 
-* [What is ddev-solr?](#what-is-ddev-solr)
-* [Solarium](#solarium)
-* [Drupal and Search API Solr](#drupal-and-search-api-solr)
+- [What is ddev-solr?](#what-is-ddev-solr)
+- [Solarium](#solarium)
+- [Drupal and Search API Solr](#drupal-and-search-api-solr)
+    - [Installation steps](#installation-steps)
 
 ## What is ddev-solr?
 
@@ -22,9 +23,9 @@ access rights:
 * password: `SolrRocks`
 
 Once up and running you can access Solr's UI within your browser by opening
-`http://<projectname>.ddev.site:8983`. For example, if the project is named
-"myproject" the hostname will be `http://myproject.ddev.site:8983`. To access
-the Solr container from the web container use `http://ddev-<project>-solr:8983`.
+`https://<projectname>.ddev.site:8983`. For example, if the project is named
+"myproject" the hostname will be `https://myproject.ddev.site:8983`. To access
+the Solr container from the web container use `https://ddev-<project>-solr:8983`.
 
 Solr Cloud depends on Zookeeper to share configurations between the Solr nodes.
 Therefore, this service starts a single Zookeeper server on port 2181, too.

@@ -12,7 +12,7 @@ setup() {
 }
 
 health_checks() {
-  ddev exec "curl -u solr:SolrRocks -s http://ddev-${PROJNAME}-solr:8983/solr/# | grep Admin"
+  ddev exec "curl -u solr:SolrRocks -s https://ddev-${PROJNAME}-solr:8983/solr/# | grep Admin"
 }
 
 teardown() {
@@ -39,4 +39,3 @@ teardown() {
   ddev restart >/dev/null
   health_checks
 }
-

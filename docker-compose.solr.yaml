@@ -40,7 +40,8 @@ services:
       #SOLR_HEAP: 1g
       ZK_HOST: ddev-${DDEV_SITENAME}-zoo:2181
       VIRTUAL_HOST: $DDEV_HOSTNAME
-      HTTP_EXPOSE: 8983:8983
+      HTTP_EXPOSE: 8982:8983
+      HTTPS_EXPOSE: 8983:8983
     depends_on:
       - zoo
     volumes:
