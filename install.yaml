@@ -1,6 +1,6 @@
 name: solr
 
 project_files:
-- commands
+- commands/solr/solr
 - docker-compose.solr.yaml
 - solr/security.json
