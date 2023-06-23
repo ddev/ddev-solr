@@ -65,7 +65,7 @@ $config = [
     'endpoint' => [
         'localhost' => [
             // Replace <project> by your project's name:
-            'host' => 'ddev-<project>-solr',
+            'host' => 'solr',
             'port' => 8983,
             'path' => '/',
             // Use your collection name here:
@@ -118,5 +118,26 @@ runs a single Solr node.
 3. Press the `Upload Configset` button on the server's view and check the "Upload (and overwrite) configset" checkbox.
 4. Set the number of shards to `1`.
 5. Press `Upload`.
+
+## What's the difference between this and ddev-drupal9-solr
+
+ddev-drupal9-solr provides Solr running in a the "classic standalone" mode using a single core. ddev-solr runs Solr in
+the modern "cloud" mode (even if it just starts a single Solr node).
+
+Running in cloud mode has several advantages. The biggest one from Drupal's perspective is that every time an update of
+the search_api_solr module asks you to generate and deploy an updated configset, it is just a click in the UI or a
+single drush command instead of downloading and extracting a zip, copying the files to the ddev folder and restarting
+ddev. This is possible because of the Configset API Solr Cloud provides.
+
+But there are also more and more APIs and features, which are only available in combination with Solr Cloud and which
+are supported by solarium and search_api_solr:
+   - [Streaming Expressions](https://solr.apache.org/guide/solr/latest/query-guide/streaming-expressions.html)
+   - Collection API
+   - Updating files like stop words, compound words, protected words, NLP models, LTR models, ... on the the fly using
+     APIs
+   - ...
+
+Another important difference of ddev-solr compared to ddev-drupal9-solr is, that ddev-solr configures Solr to be able to
+handle NLP models. So DDEV could be used with [search_api_solr_nlp](https://www.drupal.org/project/search_api_solr_nlp).
 
 **Contributed and maintained by [@mkalkbrenner](https://github.com/mkalkbrenner)**
