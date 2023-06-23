@@ -30,6 +30,8 @@ teardown() {
   ddev get ${DIR}
   ddev restart
   health_checks
+  curl -u solr:SolrRocks -X POST --header "Content-Type:application/octet-stream" --data-binary @testdata/techproducts_configset.zip "http://${PROJNAME}.ddev.site:8983/solr/admin/configs?action=UPLOAD&name=techproducts_configset"
+  curl -u solr:SolrRocks http://${PROJNAME}.ddev.site:8983/solr/admin/collections?action=CREATE&name=newCollection&numShards=1&replicationFactor=1&collection.configName=techproducts_configset
 }
 
 @test "install from release" {
