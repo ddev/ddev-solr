@@ -95,7 +95,8 @@ Starting from Search API Solr module version 4.2.1 you don't need to deal with
 configsets manually anymore. Just enable the `search_api_solr_admin` sub-module
 which is part of Search API Solr. Now you create or update your "collections" at
 any time by clicking the "Upload Configset" button on the Search API server
-details page (see installation steps below), or automate things using
+details page (see installation steps below), or use `drush` to do this with
+
 ```
 ddev drush --numShards=1 search-api-solr:upload-configset SEARCH_API_SERVER_ID
 ```
@@ -115,7 +116,8 @@ runs a single Solr node.
    - Default Solr collection: `techproducts` (You can define any name here. The collection will be created automatically.)
    - Username: `solr`
    - Password: `SolrRocks`
-3. Press the `Upload Configset` button on the server's view and check the "Upload (and overwrite) configset" checkbox.
+3. On the server's "view" page click the `Upload Configset` button and check the "Upload (and overwrite) configset" checkbox.
+    ![images](images/upload-configset.png)
 4. Set the number of shards to `1`.
 5. Press `Upload`.
 
