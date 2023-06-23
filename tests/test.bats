@@ -13,6 +13,7 @@ setup() {
 
 health_checks() {
   pwd
+  ls -l
   ddev exec "curl -u solr:SolrRocks -s http://ddev-${PROJNAME}-solr:8983/solr/# | grep Admin"
   ddev solr --help | grep COMMAND
   curl -u solr:SolrRocks -X POST --header "Content-Type:application/octet-stream" --data-binary @testdata/techproducts_configset.zip "http://${PROJNAME}.ddev.site:8983/solr/admin/configs?action=UPLOAD&name=techproducts_configset"
