@@ -7,6 +7,7 @@
 - [Solarium](#solarium)
 - [Drupal and Search API Solr](#drupal-and-search-api-solr)
     - [Installation steps](#installation-steps)
+- [What's the difference between this and ddev-drupal9-solr](#whats-the-difference-between-this-and-ddev-drupal9-solr)
 
 ## What is ddev-solr?
 
