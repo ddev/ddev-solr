@@ -40,4 +40,3 @@ teardown() {
   ddev restart >/dev/null
   health_checks
 }
-
