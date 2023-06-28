@@ -43,7 +43,7 @@ Once up and running, access Solr's UI within your browser by opening
 `http://<projectname>.ddev.site:8983`. For example, if the project is named
 "myproject" the hostname will be `http://myproject.ddev.site:8983`.
 
-To access the Solr container from the web container use `http://ddev-<projectname>-solr:8983`.
+To access the Solr container from DDEV's web container, use  `http://solr:8983`.
 
 Solr Cloud depends on Zookeeper to share configurations between the Solr nodes.
 Therefore, this service starts a single Zookeeper server on port 2181, too.
