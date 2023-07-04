@@ -2,7 +2,7 @@
 
 services:
   solr:
-    image: solr:8.11
+    image: solr:8
     container_name: ddev-${DDEV_SITENAME}-solr
     expose:
       - 8983
@@ -26,7 +26,7 @@ services:
     command: bash -c "docker-entrypoint.sh solr zk cp file:/mnt/ddev_config/solr/security.json zk:/security.json && exec solr-foreground"
 
   zoo:
-    image: bitnami/zookeeper:3.8.1
+    image: bitnami/zookeeper:3.8
     container_name: ddev-${DDEV_SITENAME}-zoo
     hostname: ddev-${DDEV_SITENAME}-zoo
     expose:
