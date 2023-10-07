@@ -1,4 +1,4 @@
-[![tests](https://github.com/mkalkbrenner/ddev-solr/actions/workflows/tests.yml/badge.svg)](https://github.com/mkalkbrenner/ddev-solr/actions/workflows/tests.yml) ![project is maintained](https://img.shields.io/maintenance/yes/2024.svg)
+[![tests](https://github.com/ddev/ddev-solr/actions/workflows/tests.yml/badge.svg)](https://github.com/ddev/ddev-solr/actions/workflows/tests.yml) ![project is maintained](https://img.shields.io/maintenance/yes/2024.svg)
 
 # ddev-solr <!-- omit in toc -->
 
@@ -30,7 +30,7 @@ access rights:
 1. Install the addon
 
     ```shell
-    ddev get mkalkbrenner/ddev-solr
+    ddev get ddev/ddev-solr
     ```
 
 1. Restart DDEV to start the addon.
