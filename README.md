@@ -30,7 +30,7 @@ access rights:
 1. Install the addon
 
     ```shell
-    ddev get mkalkbrenner/ddev-solr
+    ddev get ddev/ddev-solr
     ```
 
 1. Restart DDEV to start the addon.
