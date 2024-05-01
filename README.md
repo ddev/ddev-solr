@@ -14,6 +14,10 @@
 ddev-solr provides Solr (Cloud) using a single Solr node, which is sufficient
 for local development requirements.
 
+Note: existing applications that have been developed with Solr Standalone instead of
+Cloud should still work with Cloud. They connect to a __collection__ instead a
+__core__.
+
 Solr Cloud provides a lot of APIs to manage your collections, cores, schemas
 etc. Some of these APIs require a so-called "trusted" context. Solr therefore
 supports different technologies for authentication and authorization. The
@@ -47,6 +51,22 @@ To access the Solr container from DDEV's web container, use  `http://solr:8983`.
 
 Solr Cloud depends on Zookeeper to share configurations between the Solr nodes.
 Therefore, this service starts a single Zookeeper server on port 2181, too.
+
+## Create a collection
+
+It is recommended to use Solr's API to manage your collections (and cores).
+You could use the solr command line client, or the Solr API via curl or any
+http client.
+The PHP solarium library provides all required methods as well.
+Some frameworks like Drupal provide a full integration to manage your Solr
+collections within the framework itself.
+
+But for backward compatibility to older ddev Solr integrations and legacy
+applications that just provide a Solr configset (sometimes simply called
+"Solr config"), there's another method, too:
+Simply copy a configset directory to `.ddev/solr/configsets/` and restart ddev.
+That configset will automatically be uploaded (or updated) to Solr and a corresponding
+collection with the same name will be created if it doesn't exist already.
 
 ## Solarium
 

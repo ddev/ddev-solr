@@ -16,12 +16,8 @@ health_checks() {
   ddev exec "curl -sSf -u solr:SolrRocks -s http://solr:8983/solr/# | grep Admin >/dev/null"
   # Make sure the custom `ddev solr` command works
   ddev solr --help | grep COMMAND >/dev/null
-  #echo "# curl -v -sSf -u solr:SolrRocks -X POST --header \"Content-Type:application/octet-stream\" --data-binary \"@${DIR}/tests/testdata/techproducts_configset.zip\" \"http://${PROJNAME}.ddev.site:8983/solr/admin/configs?action=UPLOAD&name=techproducts_configset\"" >&3
-  # Upload the techproducts configset
-  # Use `curl -v` to learn more about what's going wrong
-  curl -sSf -u solr:SolrRocks -X POST --header "Content-Type:application/octet-stream" --data-binary "@${DIR}/tests/testdata/techproducts_configset.zip" "http://${PROJNAME}.ddev.site:8983/solr/admin/configs?action=UPLOAD&name=techproducts_configset"
-  # Check to make sure the configset was uploaded and can be used
-  curl -v -sSf -u solr:SolrRocks "http://${PROJNAME}.ddev.site:8983/solr/admin/collections?action=CREATE&name=newCollection&numShards=1&replicationFactor=1&collection.configName=techproducts_configset"
+  # Check that the techproducts configset was uploaded and a corresponding collection has been created
+  ddev exec "curl -sSf -u solr:SolrRocks -s http://solr:8983/solr/techproducts/select?q=*:*"
 }
 
 teardown() {

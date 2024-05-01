@@ -2,7 +2,7 @@
 
 services:
   solr:
-    image: solr:8
+    image: solr:9.6
     container_name: ddev-${DDEV_SITENAME}-solr
     expose:
       - 8983
@@ -23,10 +23,22 @@ services:
     volumes:
       - .:/mnt/ddev_config
       - solr:/var/solr
-    command: bash -c "docker-entrypoint.sh solr zk cp file:/mnt/ddev_config/solr/security.json zk:/security.json && exec solr-foreground"
+    command: bash -c "
+      docker-entrypoint.sh solr zk cp file:/mnt/ddev_config/solr/security.json zk:/security.json;
+      export SOLR_AUTH_TYPE='basic';
+      export SOLR_AUTHENTICATION_OPTS='-Dbasicauth=solr:SolrRocks';
+      solr start -c;
+      cd /mnt/ddev_config/solr/configsets; for dir in */; do
+      dir=$${dir%/};
+      solr zk upconfig -n \"$$dir\" -d \"$$dir\";
+      solr create -c \"$$dir\" -n \"$$dir\" -shards 1 -replicationFactor 1;
+      done; cd -;
+      solr stop;
+      exec solr-foreground;
+      "
 
   zoo:
-    image: bitnami/zookeeper:3.8
+    image: bitnami/zookeeper:3.9
     container_name: ddev-${DDEV_SITENAME}-zoo
     hostname: ddev-${DDEV_SITENAME}-zoo
     expose:
