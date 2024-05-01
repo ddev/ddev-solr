@@ -15,8 +15,6 @@ health_checks() {
   ddev logs -s solr
   # Make sure the solr admin UI is working
   ddev exec "curl -sSf -u solr:SolrRocks -s http://solr:8983/solr/# | grep Admin >/dev/null"
-  # Check that the techproducts configset was uploaded and a corresponding collection has been created
-  ddev exec "curl -sSf -u solr:SolrRocks -s http://solr:8983/solr/techproducts/select?q=*:* | grep numFound >/dev/null"
 }
 
 teardown() {
@@ -33,6 +31,8 @@ teardown() {
   ddev get ${DIR}
   ddev restart
   health_checks
+  # Check that the techproducts configset was uploaded and a corresponding collection has been created
+  ddev exec "curl -sSf -u solr:SolrRocks -s http://solr:8983/solr/techproducts/select?q=*:* | grep numFound >/dev/null"
 }
 
 @test "install from release" {
