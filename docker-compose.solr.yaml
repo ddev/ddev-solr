@@ -36,6 +36,8 @@ services:
       solr stop;
       exec solr-foreground;
       "
+    healthcheck:
+      test: ["CMD-SHELL", "curl --fail -s localhost:8983/solr/"]
 
   zoo:
     image: bitnami/zookeeper:3.9
