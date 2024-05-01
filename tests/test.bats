@@ -17,7 +17,7 @@ health_checks() {
   # Make sure the custom `ddev solr` command works
   ddev solr --help | grep COMMAND >/dev/null
   # Check that the techproducts configset was uploaded and a corresponding collection has been created
-  ddev exec "curl -sSf -u solr:SolrRocks -s http://solr:8983/solr/techproducts/select?q=*:*"
+  ddev exec "curl -sSf -u solr:SolrRocks -s http://solr:8983/solr/techproducts/select?q=*:* >/dev/null"
 }
 
 teardown() {
@@ -39,8 +39,8 @@ teardown() {
 @test "install from release" {
   set -eu -o pipefail
   cd ${TESTDIR} || ( printf "unable to cd to ${TESTDIR}\n" && exit 1 )
-  echo "# ddev get mkalkbrenner/ddev-solr with project ${PROJNAME} in ${TESTDIR} ($(pwd))" >&3
-  ddev get mkalkbrenner/ddev-solr
+  echo "# ddev get ddev/ddev-solr with project ${PROJNAME} in ${TESTDIR} ($(pwd))" >&3
+  ddev get ddev/ddev-solr
   ddev restart >/dev/null
   health_checks
 }
