@@ -8,31 +8,34 @@ services:
       - 8983
     labels:
       com.ddev.site-name: ${DDEV_SITENAME}
-      com.ddev.approot: $DDEV_APPROOT
+      com.ddev.approot: ${DDEV_APPROOT}
     environment:
       SOLR_HOST: ddev-${DDEV_SITENAME}-solr
       SOLR_PORT: 8983
       # The pre-trained OpenNLP models require a much bigger buffer.
       SOLR_OPTS: -Djute.maxbuffer=50000000
       #SOLR_HEAP: 1g
+      SOLR_AUTH_TYPE: basic
+      SOLR_AUTHENTICATION_OPTS: -Dbasicauth=solr:SolrRocks
       ZK_HOST: ddev-${DDEV_SITENAME}-zoo:2181
-      VIRTUAL_HOST: $DDEV_HOSTNAME
+      VIRTUAL_HOST: ${DDEV_HOSTNAME}
       HTTP_EXPOSE: 8983:8983
+      #HTTPS_EXPOSE: 8943:8983
     depends_on:
       - zoo
     volumes:
       - .:/mnt/ddev_config
       - solr:/var/solr
-    command: bash -c "set -eu
+    command: bash -c "
       docker-entrypoint.sh solr zk cp file:/mnt/ddev_config/solr/security.json zk:/security.json;
-      export SOLR_AUTH_TYPE='basic';
-      export SOLR_AUTHENTICATION_OPTS='-Dbasicauth=solr:SolrRocks';
       solr start -c;
-      cd /mnt/ddev_config/solr/configsets; for dir in */; do
-      dir=$${dir%/};
-      solr zk upconfig -n \"$$dir\" -d \"$$dir\";
-      solr create -c \"$$dir\" -n \"$$dir\" -shards 1 -replicationFactor 1;
-      done; cd -;
+      cd /mnt/ddev_config/solr/configsets;
+      for dir in */; do
+        dir=$${dir%/};
+        solr zk upconfig -n \"$$dir\" -d \"$$dir\";
+        solr create -c \"$$dir\" -n \"$$dir\" -shards 1 -replicationFactor 1;
+      done;
+      cd -;
       solr stop;
       exec solr-foreground;
       "
@@ -47,7 +50,7 @@ services:
       - 2181
     labels:
       com.ddev.site-name: ${DDEV_SITENAME}
-      com.ddev.approot: $DDEV_APPROOT
+      com.ddev.approot: ${DDEV_APPROOT}
     environment:
       # The pre-trained OpenNLP models require a much bigger buffer.
       JVMFLAGS: -Djute.maxbuffer=50000000
