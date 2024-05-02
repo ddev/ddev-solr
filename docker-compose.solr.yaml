@@ -23,14 +23,14 @@ services:
     volumes:
       - .:/mnt/ddev_config
       - solr:/var/solr
-    command: bash -c "
+    command: bash -c "set -eu;
       docker-entrypoint.sh solr start -c;
       solr zk cp file:/mnt/ddev_config/solr/security.json zk:/security.json -z localhost:9983;
       cd /mnt/ddev_config/solr/configsets;
       for dir in */; do
         dir=$${dir%/};
         solr zk upconfig -n \"$$dir\" -d \"$$dir\" -z localhost:9983;
-        solr create -c \"$$dir\" -n \"$$dir\" -shards 1 -replicationFactor 1;
+        solr create -c \"$$dir\" -n \"$$dir\" -shards 1 -replicationFactor 1 || true;
       done;
       cd -;
       solr stop;
