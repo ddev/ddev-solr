@@ -23,7 +23,7 @@ services:
     volumes:
       - .:/mnt/ddev_config
       - solr:/var/solr
-    command: bash -c "
+    command: bash -c "set -eu
       docker-entrypoint.sh solr zk cp file:/mnt/ddev_config/solr/security.json zk:/security.json;
       export SOLR_AUTH_TYPE='basic';
       export SOLR_AUTHENTICATION_OPTS='-Dbasicauth=solr:SolrRocks';
