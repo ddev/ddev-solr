@@ -17,50 +17,27 @@ services:
       #SOLR_HEAP: 1g
       SOLR_AUTH_TYPE: basic
       SOLR_AUTHENTICATION_OPTS: -Dbasicauth=solr:SolrRocks
-      ZK_HOST: ddev-${DDEV_SITENAME}-zoo:2181
       VIRTUAL_HOST: ${DDEV_HOSTNAME}
       HTTP_EXPOSE: 8983:8983
       #HTTPS_EXPOSE: 8943:8983
-    depends_on:
-      - zoo
     volumes:
       - .:/mnt/ddev_config
       - solr:/var/solr
     command: bash -c "
-      docker-entrypoint.sh solr zk cp file:/mnt/ddev_config/solr/security.json zk:/security.json;
-      solr start -c;
+      docker-entrypoint.sh solr start -c;
+      solr zk cp file:/mnt/ddev_config/solr/security.json zk:/security.json -z localhost:9983;
       cd /mnt/ddev_config/solr/configsets;
       for dir in */; do
         dir=$${dir%/};
-        solr zk upconfig -n \"$$dir\" -d \"$$dir\";
+        solr zk upconfig -n \"$$dir\" -d \"$$dir\" -z localhost:9983;
         solr create -c \"$$dir\" -n \"$$dir\" -shards 1 -replicationFactor 1;
       done;
       cd -;
       solr stop;
-      exec solr-foreground;
+      exec solr-foreground -c;
       "
     healthcheck:
       test: ["CMD-SHELL", "curl --fail -s localhost:8983/solr/"]
-
-  zoo:
-    image: bitnami/zookeeper:3.9
-    container_name: ddev-${DDEV_SITENAME}-zoo
-    hostname: ddev-${DDEV_SITENAME}-zoo
-    expose:
-      - 2181
-    labels:
-      com.ddev.site-name: ${DDEV_SITENAME}
-      com.ddev.approot: ${DDEV_APPROOT}
-    environment:
-      # The pre-trained OpenNLP models require a much bigger buffer.
-      JVMFLAGS: -Djute.maxbuffer=50000000
-      ZOO_MY_ID: 1
-      ZOO_SERVERS: server.1=ddev-${DDEV_SITENAME}-zoo1:2888:3888
-      ZOO_4LW_COMMANDS_WHITELIST: mntr, conf, ruok
-      ALLOW_ANONYMOUS_LOGIN: "yes"
-    volumes:
-      - .:/mnt/ddev_config
-      - zoo:/bitnami/zookeeper
 
   web:
     links:
@@ -68,4 +45,3 @@ services:
 
 volumes:
   solr:
-  zoo:
