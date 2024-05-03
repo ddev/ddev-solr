@@ -4,6 +4,7 @@
 
 - [What is ddev-solr?](#what-is-ddev-solr)
 - [Getting started](#getting-started)
+- [Solr command line client](#solr-command-line-client)
 - [Create a collection](#create-a-collection)
 - [Solarium](#solarium)
 - [Drupal and Search API Solr](#drupal-and-search-api-solr)
