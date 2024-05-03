@@ -69,6 +69,20 @@ Simply copy a configset directory to `.ddev/solr/configsets/` and restart ddev.
 That configset will automatically be uploaded (or updated) to Solr and a corresponding
 collection with the same name will be created if it doesn't exist already.
 
+## Solr command line client
+
+The `solr` command line client is available as ddev command:
+```sh
+ddev solr
+```
+
+The `zk` command is usually executed as `solr zk -z <HOST>:<PORT>`. To ease its
+usage a convenient ddev command exists that uses preconfigured connection
+settings. So the `-z` option can be omitted:
+```sh
+ddev solr-zk
+```
+
 ## Solarium
 
 [Solarium](https://github.com/solariumphp/solarium) is the leading Solr
