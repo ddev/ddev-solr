@@ -46,31 +46,55 @@ access rights:
    ddev restart
    ```
 
-Once up and running, access Solr's UI within your browser by opening
+Once up and running, access Solr's admin UI within your browser by opening
 `http://<projectname>.ddev.site:8983`. For example, if the project is named
 "myproject" the hostname will be `http://myproject.ddev.site:8983`.
 
-To access the Solr container from DDEV's web container, use  `http://solr:8983`.
+The admin UI is protected by basic authentication. The preconfigured admin
+account in `security.json` is user `solr` using the password `SolrRocks`.
 
-Solr Cloud depends on Zookeeper to share configurations between the Solr nodes.
-Therefore, this service starts a single Zookeeper server on port 2181, too.
+To access the Solr container from DDEV's web container, use  `http://solr:8983`.
 
 ## Create a collection
 
 It is recommended to use Solr's API to manage your collections (and cores).
-You could use the solr command line client (see below), or the Solr API via curl
-or any http client.
+You could use the [Solr command line client](#solr-command-line-client), or the
+Solr API via curl or any http client.
+Or use Solr's admin UI.
+
+Creating collections require that the configset to be used by this collection
+has been uploaded within a "trusted context". This is ensured if you use the
+admin UI with the predefined admin account `solr` or if you use the solr command
+line client `ddev solr-zk`. If you use any other http client and the API, ensure
+that you use basic authentocation with the prconfigured admin account
+`solr:SolrRocks`.
+
 The PHP solarium library provides all required methods as well.
 Some frameworks like Drupal provide a full integration to manage your Solr
 collections within the framework itself.
 
-But for backward compatibility to older ddev Solr integrations and legacy
+For backward compatibility to older ddev Solr integrations and legacy
 applications that just provide a Solr configset (sometimes simply called
-"Solr config"), there's another method, too:
+"Solr config"), there's a ddev specific convenient method, too:
 Simply copy a configset directory to `.ddev/solr/configsets/` and restart ddev.
-That configset will automatically be uploaded (or updated) to Solr and a
-corresponding collection with the same name will be created if it doesn't exist
-already.
+That configset will automatically be uploaded (or updated) to Solr using a
+trusted context and a corresponding collection with the same name will be
+created if it doesn't exist already.
+
+__Note:__ Solr Cloud could be run on multiple nodes. Any node has it's own core
+that holds your data. A collection is a set of cores distributed over several
+nodes. If you read some old documentation or the usage instruction of an old PHP
+application, it might talk about a "core". In that case you could simply replace
+the word "core" with "collection". Connecting to a collection on Solr Cloud
+behaves like connecting to a core on "Solr standalone".
+Some documentations or applications talk about an "index". That's also just a
+synonym for a collection.
+
+__Note:__ For maximum compatibility with older applications that don't support
+basic authentication when connecting Solr, reading/searching from and updating
+documents within an "index" (collection) doesn't require basic authentication
+using this ddev integration. For sure you can use basic authentication but it is
+not a must. Just the admin UI requires it to ensure the "trusted context".
 
 ## Solr command line client
 
@@ -85,6 +109,9 @@ settings. So the `-z` option can be omitted:
 ```sh
 ddev solr-zk
 ```
+
+Both commands are preconfigured to connect as user `solr` which is the admin
+account.
 
 ## Add third party Solr modules and libraries
 

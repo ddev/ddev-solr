@@ -1,3 +1,5 @@
+#!/bin/bash
+
 setup() {
   set -eu -o pipefail
   export DIR="$( cd "$( dirname "$BATS_TEST_FILENAME" )" >/dev/null 2>&1 && pwd )/.."
@@ -16,6 +18,8 @@ health_checks() {
   ddev exec "curl -sSf -u solr:SolrRocks -s http://solr:8983/solr/# | grep Admin >/dev/null"
   # Check that the techproducts configset was uploaded and a corresponding collection has been created
   ddev exec "curl -sSf -u solr:SolrRocks -s http://solr:8983/solr/techproducts/select?q=*:* | grep numFound >/dev/null"
+  # Check unauthenitcated read access
+  ddev exec "curl -sSf -s http://solr:8983/solr/techproducts/select?q=*:* | grep numFound >/dev/null"
   # Make sure the custom `ddev solr` command works
   ddev solr | grep COMMAND >/dev/null
   # Make sure the custom `ddev solr-zk` command works
