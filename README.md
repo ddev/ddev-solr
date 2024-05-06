@@ -4,9 +4,10 @@
 
 - [What is ddev-solr?](#what-is-ddev-solr)
 - [Getting started](#getting-started)
-- [Solr command line client](#solr-command-line-client)
 - [Create a collection](#create-a-collection)
-- [Solarium](#solarium)
+- [Solr command line client](#solr-command-line-client)
+- [Add third party Solr modules and libraries](#add-third-party-solr-modules-and-libraries)
+- [Solarium](#solarium-php-client)
 - [Drupal and Search API Solr](#drupal-and-search-api-solr)
     - [Installation steps](#installation-steps)
 - [What's the difference between this and ddev-drupal9-solr](#whats-the-difference-between-this-and-ddev-drupal9-solr)
@@ -57,8 +58,8 @@ Therefore, this service starts a single Zookeeper server on port 2181, too.
 ## Create a collection
 
 It is recommended to use Solr's API to manage your collections (and cores).
-You could use the solr command line client, or the Solr API via curl or any
-http client.
+You could use the solr command line client (see below), or the Solr API via curl
+or any http client.
 The PHP solarium library provides all required methods as well.
 Some frameworks like Drupal provide a full integration to manage your Solr
 collections within the framework itself.
@@ -67,8 +68,9 @@ But for backward compatibility to older ddev Solr integrations and legacy
 applications that just provide a Solr configset (sometimes simply called
 "Solr config"), there's another method, too:
 Simply copy a configset directory to `.ddev/solr/configsets/` and restart ddev.
-That configset will automatically be uploaded (or updated) to Solr and a corresponding
-collection with the same name will be created if it doesn't exist already.
+That configset will automatically be uploaded (or updated) to Solr and a
+corresponding collection with the same name will be created if it doesn't exist
+already.
 
 ## Solr command line client
 
@@ -84,7 +86,16 @@ settings. So the `-z` option can be omitted:
 ddev solr-zk
 ```
 
-## Solarium
+## Add third party Solr modules and libraries
+
+Copy third party Solr modules and libraries jar files into `.ddev/solr/lib/`.
+To load and use them within a collection, add this line to your
+collection's `solrconfig.xml`:
+```xml
+<lib dir="/opt/solr/modules/ddev/lib/" regex=".*\.jar" />
+```
+
+## Solarium PHP client
 
 [Solarium](https://github.com/solariumphp/solarium) is the leading Solr
 integration library for PHP. It is used by the modules and integrations of many
@@ -125,8 +136,9 @@ credentials for Basic Authentication in `.ddev/solr/security.json`.
 
 Solr requires a Drupal-specific configset for any collection that should be used
 to index Drupal's content. (In Solr Cloud "collections" are the equivalent to
-"cores" in classic Solr installations. Actually, in a big Solr Cloud installation
-a collection might consist of multiple cores across all Solr Cloud nodes.)
+"cores" in classic Solr installations. Actually, in a big Solr Cloud
+installation a collection might consist of multiple cores across all Solr Cloud
+nodes.)
 
 Starting from Search API Solr module version 4.2.1 you don't need to deal with
 configsets manually anymore. Just enable the `search_api_solr_admin` sub-module

@@ -22,6 +22,7 @@ services:
       #HTTPS_EXPOSE: 8943:8983
     volumes:
       - .:/mnt/ddev_config
+      - ./solr/lib:/opt/solr/modules/ddev/lib
       - solr:/var/solr
     command: bash -c "set -eu;
       docker-entrypoint.sh solr start -c -Dlog4j.configurationFile=/opt/solr/server/resources/log4j2-console.xml;
