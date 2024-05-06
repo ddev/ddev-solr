@@ -218,4 +218,6 @@ are supported by solarium and search_api_solr:
 Another important difference of ddev-solr compared to ddev-drupal9-solr is, that ddev-solr configures Solr to be able to
 handle NLP models. So DDEV could be used with [search_api_solr_nlp](https://www.drupal.org/project/search_api_solr_nlp).
 
+ddev-solr supports third party Solr plugins/modules/libraries.
+
 **Contributed and maintained by [@mkalkbrenner](https://github.com/mkalkbrenner)**
