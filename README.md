@@ -17,9 +17,10 @@
 ddev-solr provides Solr (Cloud) using a single Solr node, which is sufficient
 for local development requirements.
 
-Note: existing applications that have been developed with Solr Standalone instead of
-Cloud should still work with Cloud. They connect to a __collection__ instead a
-__core__.
+> [!NOTE]
+> Existing applications that have been developed with Solr Standalone instead of
+> Cloud should still work with Cloud. They connect to a __collection__ instead a
+> __core__ but they should not notice that.
 
 Solr Cloud provides a lot of APIs to manage your collections, cores, schemas
 etc. Some of these APIs require a so-called "trusted" context. Solr therefore
@@ -81,20 +82,22 @@ That configset will automatically be uploaded (or updated) to Solr using a
 trusted context and a corresponding collection with the same name will be
 created if it doesn't exist already.
 
-__Note:__ Solr Cloud could be run on multiple nodes. Any node has it's own core
-that holds your data. A collection is a set of cores distributed over several
-nodes. If you read some old documentation or the usage instruction of an old PHP
-application, it might talk about a "core". In that case you could simply replace
-the word "core" with "collection". Connecting to a collection on Solr Cloud
-behaves like connecting to a core on "Solr standalone".
-Some documentations or applications talk about an "index". That's also just a
-synonym for a collection.
+> [!NOTE]
+> Solr Cloud could be run on multiple nodes. Any node has it's own core
+> that holds your data. A collection is a set of cores distributed over several
+> nodes. If you read some old documentation or the usage instruction of an old PHP
+> application, it might talk about a "core". In that case you could simply replace
+> the word "core" with "collection". Connecting to a collection on Solr Cloud
+> behaves like connecting to a core on "Solr standalone".
+> Some documentations or applications talk about an "index". That's also just a
+> synonym for a collection.
 
-__Note:__ For maximum compatibility with older applications that don't support
-basic authentication when connecting Solr, reading/searching from and updating
-documents within an "index" (collection) doesn't require basic authentication
-using this ddev integration. For sure you can use basic authentication but it is
-not a must. Just the admin UI requires it to ensure the "trusted context".
+> [!NOTE]
+> For maximum compatibility with older applications that don't support
+> basic authentication when connecting Solr, reading/searching from and updating
+> documents within an "index" (collection) doesn't require basic authentication
+> using this ddev integration. For sure you can use basic authentication but it is
+> not a must. Just the admin UI requires it to ensure the "trusted context".
 
 ## Solr command line client
 
