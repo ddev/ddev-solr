@@ -18,6 +18,7 @@ health_checks() {
   ddev exec "curl -sSf -u solr:SolrRocks -s http://solr:8983/solr/# | grep Admin >/dev/null"
   # Check that the techproducts configset can be uploaded and a corresponding collection will be created
   docker cp ddev-${PROJNAME}-solr:/opt/solr/server/solr/configsets/sample_techproducts_configs .ddev/solr/configsets/techproducts
+  ls -lr .ddev/solr/configsets
   ddev restart
   ddev exec "curl -sSf -u solr:SolrRocks -s http://solr:8983/solr/techproducts/select?q=*:* | grep numFound >/dev/null"
   # Check unauthenticated read access
