@@ -14,15 +14,23 @@ setup() {
 }
 
 health_checks() {
-  # Make sure the solr admin UI is working
-  ddev exec "curl -sSf -u solr:SolrRocks -s http://solr:8983/solr/# | grep Admin >/dev/null"
   # Check that the techproducts configset can be uploaded and a corresponding collection will be created
   docker cp ddev-${PROJNAME}-solr:/opt/solr/server/solr/configsets/sample_techproducts_configs .ddev/solr/configsets/techproducts
   ddev restart
-  sleep 30
+  # Wait for Solr to be ready
+  while true; do
+    # Try to reach the Solr admin ping URL
+    if curl --output /dev/null --silent --head --fail http://solr:8983/solr/techproducts/select?q=*:*; then
+        break
+    else
+        sleep 3 # Wait for 3 seconds before retrying
+    fi
+  done
   ddev exec "curl -sSf -u solr:SolrRocks -s http://solr:8983/solr/techproducts/select?q=*:* | grep numFound >/dev/null"
   # Check unauthenticated read access
   ddev exec "curl -sSf -s http://solr:8983/solr/techproducts/select?q=*:* | grep numFound >/dev/null"
+  # Make sure the solr admin UI is working
+  ddev exec "curl -sSf -u solr:SolrRocks -s http://solr:8983/solr/# | grep Admin >/dev/null"
   # Make sure the custom `ddev solr` command works
   ddev solr | grep COMMAND >/dev/null
   # Make sure the custom `ddev solr-zk` command works
