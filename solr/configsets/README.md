@@ -1,3 +1,5 @@
+#ddev-generated
+
 It is recommended to use Solr's API to manage your collections (and cores).
 For example the PHP solarium library provides all required methods.
 Some frameworks like Drupal provide a full integration to manage your Solr collections within the framework itself.
@@ -7,5 +9,3 @@ configset (sometimes simply called "Solr config"), this folder exists.
 
 Simply copy a configset directory here and restart ddev. The configset will automatically be uploaded (or updated) to
 Solr and a corresponding collection with the same name will be created if it doesn't exist already.
-
-To demonstrate the feature, the confgset of Solr's techproducts example has been added by default.
