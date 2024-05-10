@@ -20,7 +20,7 @@ health_checks() {
   # Wait for Solr to be ready
   while true; do
     # Try to reach the Solr admin ping URL
-    if curl --output /dev/null --silent --head --fail http://solr:8983/solr/techproducts/select?q=*:*; then
+    if curl --output /dev/null --silent --head --fail http://${PROJNAME}.ddev.site:8983/solr/techproducts/select?q=*:*; then
         break
     else
         sleep 3 # Wait for 3 seconds before retrying
