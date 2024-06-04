@@ -27,10 +27,13 @@ health_checks() {
     fi
   done
   ddev exec "curl -sSf -u solr:SolrRocks -s http://solr:8983/solr/techproducts/select?q=*:* | grep numFound >/dev/null"
+  ddev exec "curl -sSf -u solr:SolrRocks -s https://solr:8943/solr/techproducts/select?q=*:* | grep numFound >/dev/null"
   # Check unauthenticated read access
   ddev exec "curl -sSf -s http://solr:8983/solr/techproducts/select?q=*:* | grep numFound >/dev/null"
+  ddev exec "curl -sSf -s https://solr:8943/solr/techproducts/select?q=*:* | grep numFound >/dev/null"
   # Make sure the solr admin UI is working
   ddev exec "curl -sSf -u solr:SolrRocks -s http://solr:8983/solr/# | grep Admin >/dev/null"
+  ddev exec "curl -sSf -u solr:SolrRocks -s https://solr:8943/solr/# | grep Admin >/dev/null"
   # Make sure the custom `ddev solr` command works
   ddev solr | grep COMMAND >/dev/null
   # Make sure the custom `ddev solr-zk` command works
