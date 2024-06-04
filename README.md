@@ -48,8 +48,8 @@ access rights:
    ```
 
 Once up and running, access Solr's admin UI within your browser by opening
-`http://<projectname>.ddev.site:8983`. For example, if the project is named
-"myproject" the hostname will be `http://myproject.ddev.site:8983`.
+`https://<projectname>.ddev.site:8943`. For example, if the project is named
+"myproject" the hostname will be `https://myproject.ddev.site:8943`.
 
 The admin UI is protected by basic authentication. The preconfigured admin
 account in `security.json` is user `solr` using the password `SolrRocks`.
