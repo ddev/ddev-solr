@@ -27,13 +27,14 @@ health_checks() {
     fi
   done
   ddev exec "curl -sSf -u solr:SolrRocks -s http://solr:8983/solr/techproducts/select?q=*:* | grep numFound >/dev/null"
-  ddev exec "curl -sSf -u solr:SolrRocks -s https://solr:8943/solr/techproducts/select?q=*:* | grep numFound >/dev/null"
   # Check unauthenticated read access
   ddev exec "curl -sSf -s http://solr:8983/solr/techproducts/select?q=*:* | grep numFound >/dev/null"
-  ddev exec "curl -sSf -s https://solr:8943/solr/techproducts/select?q=*:* | grep numFound >/dev/null"
   # Make sure the solr admin UI is working
   ddev exec "curl -sSf -u solr:SolrRocks -s http://solr:8983/solr/# | grep Admin >/dev/null"
-  ddev exec "curl -sSf -u solr:SolrRocks -s https://solr:8943/solr/# | grep Admin >/dev/null"
+  # Make sure the solr admin UI via HTTP from outside is redirected to HTTP /solr/
+  curl --silent --head --fail http://${PROJNAME}.ddev.site:8983 | grep -i "location: http://${PROJNAME}.ddev.site:8983/solr/" >/dev/null
+  # Make sure the solr admin UI via HTTPS from outside is redirected to HTTPS /solr/
+  curl --silent --head --fail https://${PROJNAME}.ddev.site:8943 | grep -i "location: https://${PROJNAME}.ddev.site:8943/solr/" >/dev/null
   # Make sure the custom `ddev solr` command works
   ddev solr | grep COMMAND >/dev/null
   # Make sure the custom `ddev solr-zk` command works
