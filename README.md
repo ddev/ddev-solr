@@ -37,6 +37,14 @@ access rights:
 
 1. Install the addon
 
+    For DDEV v1.23.5 or above run
+
+    ```shell
+    ddev add-on get ddev/ddev-solr
+    ```
+
+    For earlier versions of DDEV run
+
     ```shell
     ddev get ddev/ddev-solr
     ```
