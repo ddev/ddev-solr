@@ -1,5 +1,5 @@
 #ddev-generated
-ARG SOLR_BASE_IMAGE="solr:9.6"
+ARG SOLR_BASE_IMAGE="scratch"
 FROM $SOLR_BASE_IMAGE
 
 # Fix HTTPS redirect to HTTP which breaks URL for Solr Admin UI.
