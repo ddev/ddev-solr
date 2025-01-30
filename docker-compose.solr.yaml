@@ -2,7 +2,10 @@
 
 services:
   solr:
-    build: ./solr
+    build: 
+      context: ./solr
+      args:
+        SOLR_BASE_IMAGE: ${SOLR_BASE_IMAGE}
     container_name: ddev-${DDEV_SITENAME}-solr
     expose:
       - 8983
