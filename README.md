@@ -6,6 +6,7 @@
 - [Getting started](#getting-started)
 - [Create a collection](#create-a-collection)
 - [Solr command line client](#solr-command-line-client)
+- [Using alternate versions of Solr](#using-alternate-versions-of-solr)
 - [Add third party Solr modules and libraries](#add-third-party-solr-modules-and-libraries)
 - [Solarium](#solarium-php-client)
 - [Drupal and Search API Solr](#drupal-and-search-api-solr)
@@ -114,6 +115,7 @@ This addon defaults to installing a preferred version of the [docker Solr image]
 1. **Install the addon**: `ddev addon get ddev/ddev-solr`
 2. **Set the environment variable**: `ddev dotenv set .ddev/.env.solr --solr-base-image "solr:8.11"`
 3. **Restart ddev**: `ddev restart`
+4. **Confirm the new Solr version**: `ddev solr version` expect a value something like `8.11.4`
 
 
 ## Add third party Solr modules and libraries
