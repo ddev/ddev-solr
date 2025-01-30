@@ -65,3 +65,15 @@ teardown() {
   ddev restart >/dev/null
   health_checks
 }
+
+@test "install specific image versiob" {
+  set -eu -o pipefail
+  cd ${TESTDIR} || ( printf "unable to cd to ${TESTDIR}\n" && exit 1 )
+  echo "# ddev addon get ddev/ddev-solr with project ${PROJNAME} in ${TESTDIR} ($(pwd))" >&3
+  ddev addon get ddev/ddev-solr
+  ddev dotenv set .ddev/.env.solr --solr-base-image "solr:8.11.4"
+  ddev restart >/dev/null
+  health_checks
+  SOLR_VERSION=$(ddev solr version | tr -d '[:space:]')
+  [ "$SOLR_VERSION" = "8.11.4" ]
+}
