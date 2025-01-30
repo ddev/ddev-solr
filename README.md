@@ -107,6 +107,15 @@ ddev solr-zk
 Both commands are preconfigured to connect as user `solr` which is the admin
 account.
 
+## Using alternate versions of Solr
+
+This addon defaults to installing a preferred version of the [docker Solr image](https://hub.docker.com/_/solr), but can be configured to use a different version via environment variable (`$SOLR_BASE_IMAGE`).  For example, if you would like to install the latest Solr 8.11.x, follow the steps below:
+
+1. **Install the addon**: `ddev addon get ddev/ddev-solr`
+2. **Set the environment variable**: `ddev dotenv set .ddev/.env.solr --solr-base-image "solr:8.11"`
+3. **Restart ddev**: `ddev restart`
+
+
 ## Add third party Solr modules and libraries
 
 Copy third party Solr modules and libraries jar files into `.ddev/solr/lib/`.
