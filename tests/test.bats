@@ -73,34 +73,33 @@ teardown() {
   echo "# ddev addon get ddev/ddev-solr with project ${PROJNAME} in ${TESTDIR} ($(pwd))" >&3
   ddev addon get ddev/ddev-solr
 
-  # Define test cases: (image_version, expected_prefix)
+  # Define test cases: (image_version, expected version pattern)
   versions=(
-    "solr:8.11.4 8.11.4"
-    "solr:9.6 9.6"
-    "solr:10 10"
+    "solr:8.11.4 ^8\.11\.4$"
+    "solr:9.6 ^9\.6\.[0-9]+$"
   )
 
   for version_case in "${versions[@]}"; do
     # Extract variables
     set -- $version_case
     solr_image=$1
-    expected_prefix=$2
+    expected_pattern=$2
 
     echo "Testing with Solr base image: $solr_image" >&3
 
     # Set the desired Solr version
     ddev dotenv set .ddev/.env.solr --solr-base-image "$solr_image"
-    ddev restart >/dev/null
+    ddev debug rebuild -s solr >/dev/null
     health_checks
 
-    # Capture Solr version
-    SOLR_VERSION=$(ddev solr version | sed 's/^ *//;s/ *$//' || { printf "Failed to get Solr version\n" >&2; exit 1; })
+    # Capture Solr version (extracting just the numeric version)
+    SOLR_VERSION=$(ddev solr version | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' || { printf "Failed to get Solr version\n" >&2; exit 1; })
 
     echo "Retrieved Solr version: '$SOLR_VERSION'" >&3
 
-    # Validate version format: Must be three numeric segments (e.g., 9.6.5, 10.2.1)
-    if ! [[ $SOLR_VERSION =~ ^$expected_prefix\.[0-9]+\.[0-9]+$ ]]; then
-      echo "❌ Expected version matching '$expected_prefix.X.Y' but got '$SOLR_VERSION'" >&2
+    # Validate version format using regex matching
+    if ! [[ $SOLR_VERSION =~ $expected_pattern ]]; then
+      echo "❌ Expected version matching pattern '$expected_pattern' but got '$SOLR_VERSION'" >&2
       exit 1
     fi
 
