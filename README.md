@@ -114,7 +114,7 @@ This addon defaults to installing a preferred version of the [docker Solr image]
 
 1. **Install the addon**: `ddev addon get ddev/ddev-solr`
 2. **Set the environment variable**: `ddev dotenv set .ddev/.env.solr --solr-base-image "solr:8.11"`
-3. **Restart ddev**: `ddev restart`
+3. **Rebuild Solr**: `ddev debug rebuild -s solr`
 4. **Confirm the new Solr version**: `ddev solr version` expect a value something like `8.11.4`
 
 
