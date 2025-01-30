@@ -66,14 +66,44 @@ teardown() {
   health_checks
 }
 
-@test "install specific image versiob" {
+@test "install multiple Solr image versions" {
   set -eu -o pipefail
-  cd ${TESTDIR} || ( printf "unable to cd to ${TESTDIR}\n" && exit 1 )
+  cd "${TESTDIR}" || { printf "Unable to cd to %s\n" "${TESTDIR}" >&2; exit 1; }
+
   echo "# ddev addon get ddev/ddev-solr with project ${PROJNAME} in ${TESTDIR} ($(pwd))" >&3
   ddev addon get ddev/ddev-solr
-  ddev dotenv set .ddev/.env.solr --solr-base-image "solr:8.11.4"
-  ddev restart >/dev/null
-  health_checks
-  SOLR_VERSION=$(ddev solr version | tr -d '[:space:]')
-  [ "$SOLR_VERSION" = "8.11.4" ]
+
+  # Define test cases: (image_version, expected_prefix)
+  versions=(
+    "solr:8.11.4 8.11.4"
+    "solr:9.6 9.6"
+    "solr:10 10"
+  )
+
+  for version_case in "${versions[@]}"; do
+    # Extract variables
+    set -- $version_case
+    solr_image=$1
+    expected_prefix=$2
+
+    echo "Testing with Solr base image: $solr_image" >&3
+
+    # Set the desired Solr version
+    ddev dotenv set .ddev/.env.solr --solr-base-image "$solr_image"
+    ddev restart >/dev/null
+    health_checks
+
+    # Capture Solr version
+    SOLR_VERSION=$(ddev solr version | sed 's/^ *//;s/ *$//' || { printf "Failed to get Solr version\n" >&2; exit 1; })
+
+    echo "Retrieved Solr version: '$SOLR_VERSION'" >&3
+
+    # Validate version format: Must be three numeric segments (e.g., 9.6.5, 10.2.1)
+    if ! [[ $SOLR_VERSION =~ ^$expected_prefix\.[0-9]+\.[0-9]+$ ]]; then
+      echo "❌ Expected version matching '$expected_prefix.X.Y' but got '$SOLR_VERSION'" >&2
+      exit 1
+    fi
+
+    echo "✅ Version check passed for $solr_image" >&3
+  done
 }
