@@ -52,7 +52,7 @@ teardown() {
   set -eu -o pipefail
   cd ${TESTDIR}
   echo "# ddev get ${DIR} with project ${PROJNAME} in ${TESTDIR} ($(pwd))" >&3
-  ddev get ${DIR}
+  ddev addon get ${DIR}
   ddev restart
   health_checks
 }
@@ -61,7 +61,7 @@ teardown() {
   set -eu -o pipefail
   cd ${TESTDIR} || ( printf "unable to cd to ${TESTDIR}\n" && exit 1 )
   echo "# ddev get ddev/ddev-solr with project ${PROJNAME} in ${TESTDIR} ($(pwd))" >&3
-  ddev get ddev/ddev-solr
+  ddev addon get ddev/ddev-solr
   ddev restart >/dev/null
   health_checks
 }
@@ -71,7 +71,7 @@ teardown() {
   cd "${TESTDIR}" || { printf "Unable to cd to %s\n" "${TESTDIR}" >&2; exit 1; }
 
   echo "# ddev addon get ddev/ddev-solr with project ${PROJNAME} in ${TESTDIR} ($(pwd))" >&3
-  ddev addon get ddev/ddev-solr
+  ddev addon get ${DIR}
 
   # Define test cases: (image_version, expected version pattern)
   versions=(
