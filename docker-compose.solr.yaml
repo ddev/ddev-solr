@@ -5,7 +5,7 @@ services:
     build: 
       context: ./solr
       args:
-        SOLR_BASE_IMAGE: ${SOLR_BASE_IMAGE}
+        SOLR_BASE_IMAGE: ${SOLR_BASE_IMAGE:-solr:9.6}
     container_name: ddev-${DDEV_SITENAME}-solr
     expose:
       - 8983
