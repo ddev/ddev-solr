@@ -4,3 +4,5 @@ project_files:
 - commands/solr/
 - docker-compose.solr.yaml
 - solr/
+
+ddev_version_constraint: '>= v1.23.5'
