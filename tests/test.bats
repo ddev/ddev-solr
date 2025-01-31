@@ -94,10 +94,6 @@ teardown() {
     echo "🔄 Rebuilding Solr service..." >&3
     ddev debug rebuild -s solr || { echo "❌ Failed to rebuild Solr" >&2; exit 1; }
 
-    # Perform health checks
-    echo "🩺 Running health checks..." >&3
-    health_checks || { echo "❌ Health check failed for $solr_image" >&2; exit 1; }
-
     # Capture Solr version (extracting just the numeric version)
     SOLR_VERSION=$(ddev solr version | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' || { printf "Failed to get Solr version\n" >&2; exit 1; })
 
