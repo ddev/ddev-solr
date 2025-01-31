@@ -71,7 +71,7 @@ teardown() {
   cd "${TESTDIR}" || { printf "Unable to cd to %s\n" "${TESTDIR}" >&2; exit 1; }
 
   echo "# ddev addon get ddev/ddev-solr with project ${PROJNAME} in ${TESTDIR} ($(pwd))" >&3
-  ddev addon get ${DIR}
+  ddev addon get ddev/ddev-solr
 
   # Define test cases: (image_version, expected version pattern)
   versions=(
@@ -85,17 +85,23 @@ teardown() {
     solr_image=$1
     expected_pattern=$2
 
-    echo "Testing with Solr base image: $solr_image" >&3
+    echo "⚡ Testing with Solr base image: $solr_image" >&3
 
     # Set the desired Solr version
     ddev dotenv set .ddev/.env.solr --solr-base-image "$solr_image"
-    ddev debug rebuild -s solr >/dev/null
-    health_checks
+
+    # Rebuild Solr service (without suppressing output)
+    echo "🔄 Rebuilding Solr service..." >&3
+    ddev debug rebuild -s solr || { echo "❌ Failed to rebuild Solr" >&2; exit 1; }
+
+    # Perform health checks
+    echo "🩺 Running health checks..." >&3
+    health_checks || { echo "❌ Health check failed for $solr_image" >&2; exit 1; }
 
     # Capture Solr version (extracting just the numeric version)
     SOLR_VERSION=$(ddev solr version | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' || { printf "Failed to get Solr version\n" >&2; exit 1; })
 
-    echo "Retrieved Solr version: '$SOLR_VERSION'" >&3
+    echo "🔍 Retrieved Solr version: '$SOLR_VERSION'" >&3
 
     # Validate version format using regex matching
     if ! [[ $SOLR_VERSION =~ $expected_pattern ]]; then
