@@ -71,7 +71,7 @@ teardown() {
   cd "${TESTDIR}" || { printf "Unable to cd to %s\n" "${TESTDIR}" >&2; exit 1; }
 
   echo "# ddev addon get ddev/ddev-solr with project ${PROJNAME} in ${TESTDIR} ($(pwd))" >&3
-  ddev addon get ddev/ddev-solr
+  ddev addon get ${DIR}
 
   # Define test cases: (image_version, expected version pattern)
   versions=(
