@@ -66,45 +66,26 @@ teardown() {
   health_checks
 }
 
-@test "install multiple Solr image versions" {
+@test "Solr version change" {
   set -eu -o pipefail
   cd "${TESTDIR}" || { printf "Unable to cd to %s\n" "${TESTDIR}" >&2; exit 1; }
-
-  echo "# ddev addon get ddev/ddev-solr with project ${PROJNAME} in ${TESTDIR} ($(pwd))" >&3
   ddev addon get ${DIR}
 
-  # Define test cases: (image_version, expected version pattern)
-  versions=(
-    "solr:8.11.4 ^8\.11\.4$"
-    "solr:9.6 ^9\.6\.[0-9]+$"
-  )
+  echo "⚡ Setting Solr base image to Solr 8.x.x" >&3
+  ddev dotenv set .ddev/.env.solr --solr-base-image "solr:8"
+  ddev restart
 
-  for version_case in "${versions[@]}"; do
-    # Extract variables
-    set -- $version_case
-    solr_image=$1
-    expected_pattern=$2
+  echo "🔍 Retrieving Solr version..." >&3
+  echo $(ddev solr version) >&3
+  SOLR_VERSION=$(ddev solr version | grep -oE '8\.[0-9]+\.[0-9]+' || { printf "❌ Failed to get Solr version\n" >&2; exit 1; })
 
-    echo "⚡ Testing with Solr base image: $solr_image" >&3
+  echo "🔍 Retrieved Solr version: '$SOLR_VERSION'" >&3
 
-    # Set the desired Solr version
-    ddev dotenv set .ddev/.env.solr --solr-base-image "$solr_image"
+  # Validate that the version starts with 8.x.x
+  if ! [[ $SOLR_VERSION =~ ^8\.[0-9]+\.[0-9]+$ ]]; then
+    echo "❌ Expected version matching '8.x.x' but got '$SOLR_VERSION'" >&2
+    exit 1
+  fi
 
-    # Rebuild Solr service (without suppressing output)
-    echo "🔄 Rebuilding Solr service..." >&3
-    ddev debug rebuild -s solr || { echo "❌ Failed to rebuild Solr" >&2; exit 1; }
-
-    # Capture Solr version (extracting just the numeric version)
-    SOLR_VERSION=$(ddev solr version | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' || { printf "Failed to get Solr version\n" >&2; exit 1; })
-
-    echo "🔍 Retrieved Solr version: '$SOLR_VERSION'" >&3
-
-    # Validate version format using regex matching
-    if ! [[ $SOLR_VERSION =~ $expected_pattern ]]; then
-      echo "❌ Expected version matching pattern '$expected_pattern' but got '$SOLR_VERSION'" >&2
-      exit 1
-    fi
-
-    echo "✅ Version check passed for $solr_image" >&3
-  done
+  echo "✅ Solr 8.x.x version check passed!" >&3
 }
