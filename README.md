@@ -113,11 +113,10 @@ account.
 This addon defaults to installing a preferred version of the [docker Solr image](https://hub.docker.com/_/solr), but can be configured to use a different version via environment variable (`$SOLR_BASE_IMAGE`).  For example, if you would like to install the latest Solr 8.11.x, follow the steps below:
 
 ```bash
-export SOLR_IMAGE="solr:8.11"
-
 ddev addon get ddev/ddev-solr
 
-ddev dotenv set .ddev/.env.solr --solr-base-image="${SOLR_IMAGE}"
+# Change image version as appropriate.
+ddev dotenv set .ddev/.env.solr --solr-base-image="solr:8.11"
 
 # remove old solr volume (if this is downgrade)
 ddev stop
