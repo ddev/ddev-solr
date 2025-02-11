@@ -52,7 +52,7 @@ teardown() {
   set -eu -o pipefail
   cd ${TESTDIR}
   echo "# ddev get ${DIR} with project ${PROJNAME} in ${TESTDIR} ($(pwd))" >&3
-  ddev get ${DIR}
+  ddev addon get ${DIR}
   ddev restart
   health_checks
 }
@@ -61,7 +61,31 @@ teardown() {
   set -eu -o pipefail
   cd ${TESTDIR} || ( printf "unable to cd to ${TESTDIR}\n" && exit 1 )
   echo "# ddev get ddev/ddev-solr with project ${PROJNAME} in ${TESTDIR} ($(pwd))" >&3
-  ddev get ddev/ddev-solr
+  ddev addon get ddev/ddev-solr
   ddev restart >/dev/null
   health_checks
+}
+
+@test "Solr version change" {
+  set -eu -o pipefail
+  cd "${TESTDIR}" || { printf "Unable to cd to %s\n" "${TESTDIR}" >&2; exit 1; }
+  ddev addon get ${DIR}
+
+  echo "⚡ Setting Solr base image to Solr 8.x.x" >&3
+  ddev dotenv set .ddev/.env.solr --solr-base-image "solr:8"
+  ddev restart
+
+  echo "🔍 Retrieving Solr version..." >&3
+  echo $(ddev solr version) >&3
+  SOLR_VERSION=$(ddev solr version | grep -oE '8\.[0-9]+\.[0-9]+' || { printf "❌ Failed to get Solr version\n" >&2; exit 1; })
+
+  echo "🔍 Retrieved Solr version: '$SOLR_VERSION'" >&3
+
+  # Validate that the version starts with 8.x.x
+  if ! [[ $SOLR_VERSION =~ ^8\.[0-9]+\.[0-9]+$ ]]; then
+    echo "❌ Expected version matching '8.x.x' but got '$SOLR_VERSION'" >&2
+    exit 1
+  fi
+
+  echo "✅ Solr 8.x.x version check passed!" >&3
 }

@@ -6,6 +6,7 @@
 - [Getting started](#getting-started)
 - [Create a collection](#create-a-collection)
 - [Solr command line client](#solr-command-line-client)
+- [Using alternate versions of Solr](#using-alternate-versions-of-solr)
 - [Add third party Solr modules and libraries](#add-third-party-solr-modules-and-libraries)
 - [Solarium](#solarium-php-client)
 - [Drupal and Search API Solr](#drupal-and-search-api-solr)
@@ -106,6 +107,30 @@ ddev solr-zk
 
 Both commands are preconfigured to connect as user `solr` which is the admin
 account.
+
+## Using alternate versions of Solr
+
+This addon defaults to installing a preferred version of the [docker Solr image](https://hub.docker.com/_/solr), but can be configured to use a different version via environment variable (`$SOLR_BASE_IMAGE`).  For example, if you would like to install the latest Solr 8.11.x, follow the steps below:
+
+```bash
+ddev addon get ddev/ddev-solr
+
+# Change image version as appropriate.
+ddev dotenv set .ddev/.env.solr --solr-base-image="solr:8.11"
+
+# remove old solr volume (if this is downgrade)
+ddev stop
+docker volume rm ddev-$(ddev status -j | docker run -i --rm ddev/ddev-utilities jq -r '.raw.name')_solr
+
+# rebuild solr image (required step)
+ddev debug rebuild -s solr
+
+ddev restart
+
+# confirm the new Solr version (expect a value something like 8.11.4)
+ddev solr version
+```
+
 
 ## Add third party Solr modules and libraries
 
