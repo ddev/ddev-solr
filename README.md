@@ -35,25 +35,11 @@ access rights:
 
 ## Getting started
 
-1. Install the addon
-
-    For DDEV v1.23.5 or above run
+1. Install the add-on and restart:
 
     ```shell
-    ddev add-on get ddev/ddev-solr
+    ddev add-on get ddev/ddev-solr && ddev restart
     ```
-
-    For earlier versions of DDEV run
-
-    ```shell
-    ddev get ddev/ddev-solr
-    ```
-
-1. Restart DDEV to start the addon.
-
-   ```shell
-   ddev restart
-   ```
 
 Once up and running, access Solr's admin UI within your browser by opening
 `https://<projectname>.ddev.site:8943`. For example, if the project is named
