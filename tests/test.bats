@@ -88,15 +88,20 @@ health_checks() {
   assert_success
   assert_output --partial "Solr Admin"
 
-  # Make sure the custom `ddev solr` command works
+  # Make sure `ddev solr` command works
   run ddev solr
   assert_success
   assert_output --partial "COMMAND"
 
-  # Make sure the custom `ddev solr-zk` command works
+  # Make sure `ddev solr-zk` command works
   run ddev solr-zk ls /
   assert_success
   assert_output --partial "security.json"
+
+  # Make sure `ddev solr-admin` command works
+  DDEV_DEBUG=true run ddev solr-admin
+  assert_success
+  assert_output --partial "FULLURL https://${PROJNAME}.ddev.site:8943"
 }
 
 teardown() {

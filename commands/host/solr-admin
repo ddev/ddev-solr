@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+
+## #ddev-generated: If you want to edit and own this file, remove this line.
+## Description: Launch a browser with Solr Admin
+## Usage: solr-admin
+## Example: "ddev solr-admin"
+
+echo "Login using 'solr' user and 'SolrRocks' password"
+
+DDEV_SOLR_ADMIN_PORT=8983
+DDEV_SOLR_ADMIN_HTTPS_PORT=8943
+
+if [ ${DDEV_PRIMARY_URL%://*} = "http" ] || [ -n "${GITPOD_WORKSPACE_ID:-}" ] || [ "${CODESPACES:-}" = "true" ]; then
+    ddev launch :$DDEV_SOLR_ADMIN_PORT
+else
+    ddev launch :$DDEV_SOLR_ADMIN_HTTPS_PORT
+fi

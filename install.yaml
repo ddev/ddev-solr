@@ -2,6 +2,7 @@ name: solr
 
 project_files:
 - commands/solr/
+- commands/host/solr-admin
 - docker-compose.solr.yaml
 - solr/
 
