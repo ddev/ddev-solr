@@ -25,6 +25,7 @@ services:
       HTTPS_EXPOSE: 8943:8983
     volumes:
       - .:/mnt/ddev_config
+      - ddev-global-cache:/mnt/ddev-global-cache
       - ./solr/lib:/opt/solr/modules/ddev/lib
       - solr:/var/solr
     command: bash -c "set -eu;
@@ -46,10 +47,6 @@ services:
       "
     healthcheck:
       test: ["CMD-SHELL", "curl --fail -s localhost:8983/solr/"]
-
-  web:
-    links:
-      - solr:solr
 
 volumes:
   solr:
