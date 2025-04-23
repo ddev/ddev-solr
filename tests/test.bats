@@ -56,12 +56,13 @@ health_checks() {
     fi
   done
 
+  # Check authenticated read access
   run ddev exec "curl -sf -u solr:SolrRocks http://solr:8983/solr/techproducts/select?q=*:*"
   assert_success
   assert_output --partial "numFound"
 
   # Check unauthenticated read access
-  run ddev exec "curl -sSf -s http://solr:8983/solr/techproducts/select?q=*:*"
+  run ddev exec "curl -sf http://solr:8983/solr/techproducts/select?q=*:*"
   assert_success
   assert_output --partial "numFound"
 
@@ -81,6 +82,11 @@ health_checks() {
   assert_success
   assert_output --partial "HTTP/2 302"
   assert_output --partial "location: https://${PROJNAME}.ddev.site:8943/solr/"
+
+  # Make sure the solr admin UI is working from outside
+  run curl -sfL https://${PROJNAME}.ddev.site:8943
+  assert_success
+  assert_output --partial "Solr Admin"
 
   # Make sure the custom `ddev solr` command works
   run ddev solr
