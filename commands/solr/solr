@@ -1,3 +1,8 @@
-#!/bin/bash
-#ddev-generated
+#!/usr/bin/env bash
+
+## #ddev-generated: If you want to edit and own this file, remove this line.
+## Description: Run Solr CLI inside the solr container
+## Usage: solr
+## Example: "ddev solr"
+
 solr "$@"
