@@ -49,9 +49,10 @@ health_checks() {
   while true; do
     # Try to reach the Solr admin ping URL
     if curl --output /dev/null --silent --head --fail http://${PROJNAME}.ddev.site:8983/solr/techproducts/select?q=*:*; then
-        break
+      break
     else
-        sleep 3 # Wait for 3 seconds before retrying
+      echo "Waiting three more seconds for Solr to be ready..." >&3
+      sleep 3 # Wait for 3 seconds before retrying
     fi
   done
 
@@ -79,7 +80,7 @@ health_checks() {
   run curl -sfI https://${PROJNAME}.ddev.site:8943
   assert_success
   assert_output --partial "HTTP/2 302"
-  assert_output --partial "location: http://${PROJNAME}.ddev.site:8943/solr/"
+  assert_output --partial "location: https://${PROJNAME}.ddev.site:8943/solr/"
 
   # Make sure the custom `ddev solr` command works
   run ddev solr
