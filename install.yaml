@@ -6,4 +6,18 @@ project_files:
 - docker-compose.solr.yaml
 - solr/
 
+pre_install_actions:
+  - |
+    #ddev-nodisplay
+    #ddev-description:Removing old Dockerfile
+    file="${DDEV_APPROOT}/.ddev/solr/Dockerfile"
+    if [ -f "${file}" ]; then
+      if grep -q '#ddev-generated' "${file}"; then
+        rm -f "${file}"
+      else
+        echo "${file} needs to be removed but has been modified by the user. Please check it and remove it"
+        exit 2
+      fi
+    fi
+
 ddev_version_constraint: '>= v1.24.3'
