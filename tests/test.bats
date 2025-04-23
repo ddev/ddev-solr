@@ -154,4 +154,6 @@ teardown() {
   fi
 
   echo "✅ Solr 8.x.x version check passed!" >&3
+
+  health_checks
 }
