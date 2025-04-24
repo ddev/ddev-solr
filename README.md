@@ -52,18 +52,27 @@ After installation, make sure to commit the `.ddev` directory to version control
 
 ### Solr Admin credentials
 
-Solr Cloud provides a lot of APIs to manage your collections, cores, schemas
-etc. Some of these APIs require a so-called "trusted" context. Solr therefore
-supports different technologies for authentication and authorization. The
-easiest one to configure is "Basic Authentication". This DDEV service comes with
-a simple pre-configured [`security.json`](solr/security.json) to provide such a trusted context based on basic authentication. It creates a single administrative account having full access rights:
+By default, Solr is accessible without a password. However, you can configure authentication if needed.
+
+Solr Cloud provides various APIs to manage collections, cores, schemas, etc. Some of these APIs require a “trusted” context. To support this, Solr offers several authentication and authorization mechanisms.
+
+The simplest method to set up is **Basic Authentication**. To enable it:
+
+```bash
+cp .ddev/solr/security_auth.json .ddev/solr/security.json
+ddev restart
+```
+
+This will configure Solr with a single administrative account that has full access:
 
 | Field    | Value       |
 |----------|-------------|
 | Username | `solr`      |
 | Password | `SolrRocks` |
 
-To access the Solr container from DDEV's web container, use  `http://solr:8983`.
+You can find more details about configuring authentication and authorization in the [Solr documentation](https://solr.apache.org/guide/solr/latest/deployment-guide/basic-authentication-plugin.html).
+
+To access the Solr container from DDEV's web container, use `http://solr:8983`.
 
 ## Create a collection
 
