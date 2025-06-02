@@ -56,24 +56,13 @@ health_checks() {
     fi
   done
 
-  # Check authenticated read access
-  if [ "$(ddev dotenv get .ddev/.env.solr --solr-auth-type 2>/dev/null || true)" = "basic" ]; then
-    run ddev exec "curl -sf -u solr:SolrRocks http://solr:8983/solr/techproducts/select?q=*:*"
-    assert_success
-    assert_output --partial "numFound"
-  fi
-
   # Check unauthenticated read access
   run ddev exec "curl -sf http://solr:8983/solr/techproducts/select?q=*:*"
   assert_success
   assert_output --partial "numFound"
 
   # Make sure the solr admin UI is working
-  if [ "$(ddev dotenv get .ddev/.env.solr --solr-auth-type 2>/dev/null || true)" = "basic" ]; then
-    run ddev exec "curl -sf -u solr:SolrRocks http://solr:8983/solr/#"
-  else
-    run ddev exec "curl -sf http://solr:8983/solr/#"
-  fi
+  run ddev exec "curl -sf http://solr:8983/solr/#"
   assert_success
   assert_output --partial "Solr Admin"
 
@@ -121,31 +110,6 @@ teardown() {
   echo "# ddev add-on get ${DIR} with project ${PROJNAME} in $(pwd)" >&3
   run ddev add-on get "${DIR}"
   assert_success
-
-  run cat .ddev/solr/security.json
-  assert_success
-  refute_output --partial "credentials"
-
-  run ddev restart -y
-  assert_success
-  health_checks
-}
-
-@test "install from directory with basic auth" {
-  set -eu -o pipefail
-
-  run ddev dotenv set .ddev/.env.solr --solr-auth-type=basic
-  assert_success
-  assert_file_exist .ddev/.env.solr
-
-  echo "# ddev add-on get ${DIR} with project ${PROJNAME} in $(pwd)" >&3
-  run ddev add-on get "${DIR}"
-  assert_success
-
-  run cat .ddev/solr/security.json
-  assert_success
-  assert_output --partial "credentials"
-
   run ddev restart -y
   assert_success
   health_checks
@@ -157,11 +121,6 @@ teardown() {
   echo "# ddev add-on get ${GITHUB_REPO} with project ${PROJNAME} in $(pwd)" >&3
   run ddev add-on get "${GITHUB_REPO}"
   assert_success
-
-  run cat .ddev/solr/security.json
-  assert_success
-  refute_output --partial "credentials"
-
   run ddev restart -y
   assert_success
   health_checks
@@ -178,10 +137,6 @@ teardown() {
   echo "# ddev add-on get ${DIR} with project ${PROJNAME} in $(pwd)" >&3
   run ddev add-on get "${DIR}"
   assert_success
-
-  run cat .ddev/solr/security.json
-  assert_success
-  refute_output --partial "credentials"
 
   run ddev restart -y
   assert_success

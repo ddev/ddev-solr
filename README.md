@@ -59,8 +59,7 @@ Solr Cloud provides various APIs to manage collections, cores, schemas, etc. Som
 The simplest method to set up is **Basic Authentication**. To enable it:
 
 ```bash
-ddev dotenv set .ddev/.env.solr --solr-auth-type=basic
-ddev add-on get ddev/ddev-solr
+cp .ddev/solr/security_auth.json .ddev/solr/security.json
 ddev restart
 ```
 

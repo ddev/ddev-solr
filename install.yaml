@@ -8,6 +8,7 @@ project_files:
 
 pre_install_actions:
   - |
+    #ddev-nodisplay
     #ddev-description:Removing old Dockerfile
     file="${DDEV_APPROOT}/.ddev/solr/Dockerfile"
     if [ -f "${file}" ]; then
@@ -20,19 +21,3 @@ pre_install_actions:
     fi
 
 ddev_version_constraint: '>= v1.24.3'
-
-post_install_actions:
-  - |
-    #ddev-description:Configuring authentication
-    solr_auth_type="$(ddev dotenv get .ddev/.env.solr --solr-auth-type 2>/dev/null || true)"
-    solr_authentication_opts="$(ddev dotenv get .ddev/.env.solr --solr-authentication-opts 2>/dev/null || true)"
-    if [ "${solr_auth_type}" = "" ]; then
-      if grep -q '#ddev-generated' solr/security.json; then
-        printf "{\n  \"#ddev-generated\":true\n}\n" >solr/security.json
-      fi
-      if [ "${solr_authentication_opts}" != "" ]; then
-        ddev dotenv set .ddev/.env.solr --solr-authentication-opts=""
-      fi
-    elif [ "${solr_auth_type}" = "basic" ]; then
-      ddev dotenv set .ddev/.env.solr --solr-auth-type="basic" --solr-authentication-opts="-Dbasicauth=solr:SolrRocks"
-    fi
