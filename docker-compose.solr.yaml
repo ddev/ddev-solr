@@ -35,23 +35,26 @@ services:
       - ddev-global-cache:/mnt/ddev-global-cache
       - ./solr/lib:/opt/solr/modules/ddev/lib
       - solr:/var/solr
-    command: bash -c "set -eu;
-      docker-entrypoint.sh solr start -c -Dlog4j.configurationFile=/opt/solr/server/resources/log4j2-console.xml;
-      solr zk cp file:/mnt/ddev_config/solr/security.json zk:/security.json -z localhost:9983;
-      cd /mnt/ddev_config/solr/configsets;
-      for dir in */; do
-        dir=$${dir%/};
-        if [[ \"$$dir\" != \"*\" ]]; then
-          echo \"uploading configset $$dir\";
-          solr zk upconfig -n \"$$dir\" -d \"$$dir\" -z localhost:9983;
-          echo \"creating collection $$dir\";
-          solr create -c \"$$dir\" -n \"$$dir\" -shards 1 -replicationFactor 1 || true;
-        fi;
-      done;
-      cd -;
-      solr stop > /dev/null;
-      exec solr-foreground -c -Dlog4j.configurationFile=/opt/solr/server/resources/log4j2.xml;
-      "
+    command:
+      - bash
+      - -c
+      - |
+        set -eu -o pipefail
+        docker-entrypoint.sh solr start -c -Dlog4j.configurationFile=/opt/solr/server/resources/log4j2-console.xml
+        solr zk cp file:/mnt/ddev_config/solr/security.json zk:/security.json -z localhost:9983
+        cd /mnt/ddev_config/solr/configsets
+        for dir in */; do
+          dir="$${dir%/}"
+          if [[ "$$dir" != "*" ]]; then
+            echo "uploading configset $$dir"
+            solr zk upconfig -n "$$dir" -d "$$dir" -z localhost:9983
+            echo "creating collection $$dir"
+            solr create -c "$$dir" -n "$$dir" -shards 1 -replicationFactor 1 || true
+          fi
+        done
+        cd -
+        solr stop > /dev/null
+        exec solr-foreground -c -Dlog4j.configurationFile=/opt/solr/server/resources/log4j2.xml
     healthcheck:
       test: ["CMD-SHELL", "curl --fail -s localhost:8983/solr/"]
 
