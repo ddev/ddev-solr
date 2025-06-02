@@ -5,7 +5,9 @@
 ## Usage: solr-admin
 ## Example: "ddev solr-admin"
 
-echo "Login using 'solr' user and 'SolrRocks' password"
+if [ "$(ddev dotenv get .ddev/.env.solr --solr-auth-type 2>/dev/null || true)" = "basic" ]; then
+    echo "Login using 'solr' user and 'SolrRocks' password"
+fi
 
 DDEV_SOLR_ADMIN_PORT=8983
 DDEV_SOLR_ADMIN_HTTPS_PORT=8943
