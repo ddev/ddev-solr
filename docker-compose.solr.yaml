@@ -10,6 +10,8 @@ services:
         # Jetty has X-Forwarded- headers disabled by default, enable them here:
         USER root
         RUN sed -i '/X-Forwarded-/,/-->/ {/<!--/d; /-->/d}' /opt/solr/server/etc/jetty.xml
+        # Use predefined values for username/password in Solr Admin UI.
+        RUN sed -i "/\$$rootScope.exceptions = {};/a \$$scope.username = 'solr'; \$$scope.password = 'SolrRocks';" /opt/solr/server/solr-webapp/webapp/js/angular/controllers/login.js
         USER solr
       args:
         SOLR_BASE_IMAGE: ${SOLR_BASE_IMAGE:-solr:9.6}
