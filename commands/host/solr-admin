@@ -5,8 +5,6 @@
 ## Usage: solr-admin
 ## Example: "ddev solr-admin"
 
-echo "Login using 'solr' user and 'SolrRocks' password"
-
 DDEV_SOLR_ADMIN_PORT=8983
 DDEV_SOLR_ADMIN_HTTPS_PORT=8943
 
