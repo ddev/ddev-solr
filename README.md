@@ -9,7 +9,7 @@
 - [Installation](#installation)
 - [Usage](#usage)
   - [Solr Admin credentials](#solr-admin-credentials)
-  - [Changing Solr credentials](#changing-solr-credentials)
+  - [Changing Solr password](#changing-solr-password)
   - [Create a collection](#create-a-collection)
   - [Solr command line client](#solr-command-line-client)
 - [Advanced Customization](#advanced-customization)
@@ -66,18 +66,51 @@ a simple pre-configured [`security.json`](solr/security.json) to provide such a 
 
 To access the Solr container from DDEV's web container, use `http://solr:8983`.
 
-### Changing Solr credentials
+### Changing Solr password
 
-- Remove `#ddev-generated` line from `.ddev/docker-compose.solr.yaml`
-- Remove `"#ddev-generated":true,` line from `.ddev/solr/security.json`
-- Update username and password in `.ddev/docker-compose.solr.yaml`
-  - in `dockerfile_inline`
-  - in `SOLR_AUTHENTICATION_OPTS`
-- Update username and hashed password in `.ddev/solr/security.json`
-  - in `authentication.credentials.solr` (where `solr` is the username)
-  - in `authorization.user-role.solr` (where `solr` is the username)
-  - (the hashed password can be generated with [clemente-biondo.github.io](https://github.com/clemente-biondo/clemente-biondo.github.io))
-- Run `ddev stop && ddev debug rebuild -s solr && ddev start`
+To change the Solr admin password (e.g. to `SolrRocksSolrRocks`):
+
+1. In `.ddev/docker-compose.solr.yaml`, remove the `#ddev-generated` line. Update the password in both `dockerfile_inline` and `SOLR_AUTHENTICATION_OPTS`:
+
+    ```diff
+    -#ddev-generated
+    services:
+      solr:
+        build:
+          dockerfile_inline: |
+            ...
+            # Use predefined values for username/password in Solr Admin UI.
+    -       RUN sed -i "/\$$rootScope.exceptions = {};/a \$$scope.username = 'solr'; \$$scope.password = 'SolrRocks';" /opt/solr/server/solr-webapp/webapp/js/angular/controllers/login.js
+    +       RUN sed -i "/\$$rootScope.exceptions = {};/a \$$scope.username = 'solr'; \$$scope.password = 'SolrRocksSolrRocks';" /opt/solr/server/solr-webapp/webapp/js/angular/controllers/login.js
+        ...
+        environment:
+          ...
+    -     SOLR_AUTHENTICATION_OPTS: -Dbasicauth=solr:SolrRocks
+    +     SOLR_AUTHENTICATION_OPTS: -Dbasicauth=solr:SolrRocksSolrRocks
+          ...
+    ```
+
+2. In `.ddev/solr/security.json`, remove the `#ddev-generated` line and replace the hashed password string. You can generate a new one using tools like [clemente-biondo.github.io](https://github.com/clemente-biondo/clemente-biondo.github.io):
+
+```diff
+{
+- "#ddev-generated":true,
+  "authentication":{
+    "class":"solr.BasicAuthPlugin",
+    "credentials":{
+-     "solr":"IV0EHq1OnNrj6gvRCwvFwTrZ1+z1oBbnQdiVC3otuq0= Ndd7LKvVBAaZIF0QAVi1ekCfAJXr1GGfLtRUXhgrF8c="
++     "solr":"9MCwAcWQZyUKRY1AUuemHRws4/PIqtwjrpw3D4GCQHo= dGszejkxYm0yYTVuNzBuZQ=="
+    },
+    "blockUnknown":false
+  },
+  ...
+```
+
+3. Run:
+
+    ```bash
+    ddev stop && ddev debug rebuild -s solr && ddev start
+    ```
 
 ## Create a collection
 
