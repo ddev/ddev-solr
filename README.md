@@ -92,19 +92,19 @@ To change the Solr admin password (e.g. to `SolrRocksSolrRocks`):
 
 2. In `.ddev/solr/security.json`, remove the `#ddev-generated` line and replace the hashed password string. You can generate a new one using tools like [clemente-biondo.github.io](https://github.com/clemente-biondo/clemente-biondo.github.io):
 
-```diff
-{
-- "#ddev-generated":true,
-  "authentication":{
-    "class":"solr.BasicAuthPlugin",
-    "credentials":{
--     "solr":"IV0EHq1OnNrj6gvRCwvFwTrZ1+z1oBbnQdiVC3otuq0= Ndd7LKvVBAaZIF0QAVi1ekCfAJXr1GGfLtRUXhgrF8c="
-+     "solr":"9MCwAcWQZyUKRY1AUuemHRws4/PIqtwjrpw3D4GCQHo= dGszejkxYm0yYTVuNzBuZQ=="
-    },
-    "blockUnknown":false
-  },
-  ...
-```
+    ```diff
+    {
+    - "#ddev-generated":true,
+      "authentication":{
+        "class":"solr.BasicAuthPlugin",
+        "credentials":{
+    -     "solr":"IV0EHq1OnNrj6gvRCwvFwTrZ1+z1oBbnQdiVC3otuq0= Ndd7LKvVBAaZIF0QAVi1ekCfAJXr1GGfLtRUXhgrF8c="
+    +     "solr":"9MCwAcWQZyUKRY1AUuemHRws4/PIqtwjrpw3D4GCQHo= dGszejkxYm0yYTVuNzBuZQ=="
+        },
+        "blockUnknown":false
+      },
+      ...
+    ```
 
 3. Run:
 
