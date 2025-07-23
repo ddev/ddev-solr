@@ -1,6 +1,7 @@
 #ddev-generated
 services:
   solr:
+    image: ${SOLR_BASE_IMAGE:-solr:9.6}-${DDEV_SITENAME}-built
     build:
       dockerfile_inline: |
         ARG SOLR_BASE_IMAGE="scratch"
