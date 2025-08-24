@@ -102,6 +102,11 @@ health_checks() {
   DDEV_DEBUG=true run ddev solr-admin
   assert_success
   assert_output --partial "FULLURL https://${PROJNAME}.ddev.site:8943"
+
+  # `ddev solr-zk` should work
+  run ddev solr-zk ls /
+  assert_success
+  assert_output --partial "security.json"
 }
 
 teardown() {
