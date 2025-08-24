@@ -179,7 +179,7 @@ teardown() {
   assert_success
 
   echo "🔍 Retrieving Solr version..." >&3
-  echo $(ddev solr version) >&3
+  echo $(ddev solr --version) >&3
   SOLR_VERSION=$(ddev solr version | grep -oE '8\.[0-9]+\.[0-9]+' || { printf "❌ Failed to get Solr version\n" >&2; exit 1; })
 
   echo "🔍 Retrieved Solr version: '$SOLR_VERSION'" >&3
