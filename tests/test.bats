@@ -162,3 +162,35 @@ teardown() {
 
   health_checks
 }
+
+@test "install from directory Solr 9" {
+  set -eu -o pipefail
+
+  echo "⚡ Setting Solr base image to Solr 9" >&3
+  run ddev dotenv set .ddev/.env.solr --solr-base-image "solr:9"
+  assert_success
+  assert_file_exist .ddev/.env.solr
+
+  echo "# ddev add-on get ${DIR} with project ${PROJNAME} in $(pwd)" >&3
+  run ddev add-on get "${DIR}"
+  assert_success
+
+  run ddev restart -y
+  assert_success
+
+  echo "🔍 Retrieving Solr version..." >&3
+  echo $(ddev solr version) >&3
+  SOLR_VERSION=$(ddev solr version | grep -oE '8\.[0-9]+\.[0-9]+' || { printf "❌ Failed to get Solr version\n" >&2; exit 1; })
+
+  echo "🔍 Retrieved Solr version: '$SOLR_VERSION'" >&3
+
+  # Validate that the version starts with 8.x.x
+  if ! [[ $SOLR_VERSION =~ ^9\.[0-9]+\.[0-9]+$ ]]; then
+    echo "❌ Expected version matching '9.x.x' but got '$SOLR_VERSION'" >&2
+    exit 1
+  fi
+
+  echo "✅ Solr 9.x.x version check passed!" >&3
+
+  health_checks
+}
