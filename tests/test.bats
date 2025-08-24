@@ -180,11 +180,11 @@ teardown() {
 
   echo "🔍 Retrieving Solr version..." >&3
   echo $(ddev solr --version) >&3
-  SOLR_VERSION=$(ddev solr version | grep -oE '8\.[0-9]+\.[0-9]+' || { printf "❌ Failed to get Solr version\n" >&2; exit 1; })
+  SOLR_VERSION=$(ddev solr --version | grep -oE '9\.[0-9]+\.[0-9]+' || { printf "❌ Failed to get Solr version\n" >&2; exit 1; })
 
   echo "🔍 Retrieved Solr version: '$SOLR_VERSION'" >&3
 
-  # Validate that the version starts with 8.x.x
+  # Validate that the version starts with 9.x.x
   if ! [[ $SOLR_VERSION =~ ^9\.[0-9]+\.[0-9]+$ ]]; then
     echo "❌ Expected version matching '9.x.x' but got '$SOLR_VERSION'" >&2
     exit 1
