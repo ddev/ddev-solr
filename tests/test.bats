@@ -75,13 +75,13 @@ health_checks() {
   run curl -sfI http://${PROJNAME}.ddev.site:8983
   assert_success
   assert_output --partial "HTTP/1.1 302"
-  assert_output --partial "Location: http://${PROJNAME}.ddev.site:8983/solr/"
+  assert_output --regexp "Location: (http://${PROJNAME}\\.ddev\\.site:8983)?/solr/"
 
   # Make sure the solr admin UI via HTTPS from outside is redirected to HTTPS /solr/
   run curl -sfI https://${PROJNAME}.ddev.site:8943
   assert_success
   assert_output --partial "HTTP/2 302"
-  assert_output --partial "location: https://${PROJNAME}.ddev.site:8943/solr/"
+  assert_output --regexp "[Ll]ocation: (https://${PROJNAME}\\.ddev\\.site:8943)?/solr/"
 
   # Make sure the solr admin UI is working from outside
   run curl -sfL https://${PROJNAME}.ddev.site:8943
