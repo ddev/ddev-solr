@@ -158,7 +158,7 @@ The `solr` command line client is available as a `ddev` command:
 ddev solr
 ```
 
-The `zk` command is usually executed as `solr zk -z <HOST>:<PORT>`. To ease its
+The `zk` command is usually executed as `solr zk <subcommand> -z <HOST>:<PORT>`. To ease its
 usage a convenient `ddev` command exists that uses preconfigured connection
 settings. So the `-z` option can be omitted:
 

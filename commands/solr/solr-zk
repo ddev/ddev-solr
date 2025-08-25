@@ -1,8 +1,12 @@
 #!/usr/bin/env bash
 
 ## #ddev-generated: If you want to edit and own this file, remove this line.
-## Description: Run Solr ZooKeeper inside the solr container
-## Usage: solr-zk
-## Example: "ddev solr-zk"
+## Description: Run Solr ZooKeeper commands inside the solr container (Solr 8+)
+## Usage: solr-zk [zk-subcommand] [args]
+## Examples:
+##   ddev solr-zk ls /
+##   ddev solr-zk upconfig -n myconfig -d /path/to/configset
+##   ddev solr-zk downconfig -n myconfig -d ./outdir
+##   ddev solr-zk cp -r file:/local/conf zk:/configs/myconfig
 
-solr zk -z localhost:9983 "$@"
+exec solr zk "$@" -z localhost:9983
