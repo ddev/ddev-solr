@@ -31,7 +31,7 @@ services:
       SOLR_AUTH_TYPE: basic
       SOLR_AUTHENTICATION_OPTS: -Dbasicauth=solr:SolrRocks
       # needed for Drupal Search API Solr
-      SOLR_MODULES: "extraction,langid,ltr,analysis-extras"
+      SOLR_MODULES: ${SOLR_MODULES-extraction,langid,ltr,analysis-extras}
       VIRTUAL_HOST: ${DDEV_HOSTNAME}
       HTTP_EXPOSE: 8983:8983
       HTTPS_EXPOSE: 8943:8983

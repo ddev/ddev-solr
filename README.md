@@ -201,6 +201,24 @@ All customization options (use with caution):
 | -------- | ---- |-----------|
 | `SOLR_BASE_IMAGE` | `--solr-base-image` | `solr:9` |
 
+### Add custom Solr libraries via SOLR_MODULES env variable
+
+Since version 9.8 Solr deprecates lib-directives: https://solr.apache.org/guide/solr/latest/upgrade-notes/major-changes-in-solr-9.html#solr-9-8
+
+To enable custom libraries you can use `SOLR_MODULES` environment variable.
+
+By default it is set to `SOLR_MODULES: "extraction,langid,ltr,analysis-extras"` to work with 
+Drupal Search API Solr default (jump start) config.
+
+You can unset by using:
+
+`ddev dotenv set .ddev/.env.solr --solr-modules=`
+
+or set to custom value:
+
+`ddev dotenv set .ddev/.env.solr --solr-modules=extraction,ltr`
+
+
 ### Add third party Solr modules and libraries
 
 Copy third party Solr modules and libraries jar files into `.ddev/solr/lib/`.
