@@ -197,9 +197,9 @@ Make sure to commit the `.ddev/.env.solr` file to version control.
 
 All customization options (use with caution):
 
-| Variable | Flag | Default    |
-| -------- | ---- |------------|
-| `SOLR_BASE_IMAGE` | `--solr-base-image` | `solr:9.9` |
+| Variable | Flag | Default   |
+| -------- | ---- |-----------|
+| `SOLR_BASE_IMAGE` | `--solr-base-image` | `solr:9` |
 
 ### Add third party Solr modules and libraries
 

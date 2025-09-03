@@ -1,7 +1,7 @@
 #ddev-generated
 services:
   solr:
-    image: ${SOLR_BASE_IMAGE:-solr:9.9}-${DDEV_SITENAME}-built
+    image: ${SOLR_BASE_IMAGE:-solr:9}-${DDEV_SITENAME}-built
     build:
       dockerfile_inline: |
         ARG SOLR_BASE_IMAGE="scratch"
@@ -15,7 +15,7 @@ services:
         RUN sed -i "/\$$rootScope.exceptions = {};/a \$$scope.username = 'solr'; \$$scope.password = 'SolrRocks';" /opt/solr/server/solr-webapp/webapp/js/angular/controllers/login.js
         USER solr
       args:
-        SOLR_BASE_IMAGE: ${SOLR_BASE_IMAGE:-solr:9.9}
+        SOLR_BASE_IMAGE: ${SOLR_BASE_IMAGE:-solr:9}
     container_name: ddev-${DDEV_SITENAME}-solr
     expose:
       - 8983
