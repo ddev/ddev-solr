@@ -206,11 +206,15 @@ Drupal Search API Solr default (jump start) config.
 
 You can unset by using:
 
-`ddev dotenv set .ddev/.env.solr --solr-modules=`
+```
+ddev dotenv set .ddev/.env.solr --solr-modules=
+```
 
 or set to custom value:
 
-`ddev dotenv set .ddev/.env.solr --solr-modules=extraction,ltr`
+```
+ddev dotenv set .ddev/.env.solr --solr-modules=extraction,ltr
+```
 
 All customization options (use with caution):
 
@@ -227,6 +231,9 @@ collection's `solrconfig.xml`:
 ```xml
 <lib dir="/opt/solr/modules/ddev/lib/" regex=".*\.jar" />
 ```
+
+Attention: This changed since Solr 9.8, read https://solr.apache.org/guide/solr/latest/upgrade-notes/major-changes-in-solr-9.html#solr-9-8 
+for details.
 
 ## Solarium PHP client
 
