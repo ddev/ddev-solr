@@ -64,7 +64,9 @@ services:
       test: ["CMD-SHELL", "curl --fail -s localhost:8983/solr/"]
     x-ddev:
       describe-info: |
-        User/Pass: 'solr/SolrRocks'
-        Base Image: ${SOLR_BASE_IMAGE:-solr:9}
+        User: solr
+        Pass: SolrRocks
+        Image: ${SOLR_BASE_IMAGE:-solr:9}
+      ssh-shell: bash
 volumes:
   solr:
