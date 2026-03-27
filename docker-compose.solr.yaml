@@ -62,6 +62,11 @@ services:
         exec solr-foreground -c -Dlog4j.configurationFile=/opt/solr/server/resources/log4j2.xml
     healthcheck:
       test: ["CMD-SHELL", "curl --fail -s localhost:8983/solr/"]
-
+    x-ddev:
+      describe-info: |
+        User: solr
+        Pass: SolrRocks
+        Image: ${SOLR_BASE_IMAGE:-solr:9}
+      ssh-shell: bash
 volumes:
   solr:
