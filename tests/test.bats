@@ -221,7 +221,7 @@ teardown() {
 
   echo "🔍 Retrieved Solr version: '$SOLR_VERSION'" >&3
 
-  # Validate that the version starts with 9.x.x
+  # Validate that the version starts with 10.x.x
   if ! [[ $SOLR_VERSION =~ ^10\.[0-9]+\.[0-9]+$ ]]; then
     echo "❌ Expected version matching '10.x.x' but got '$SOLR_VERSION'" >&2
     exit 1
