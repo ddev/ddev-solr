@@ -220,7 +220,7 @@ All customization options (use with caution):
 
 | Variable          | Flag                | Default   |
 |-------------------|---------------------|-----------|
-| `SOLR_BASE_IMAGE` | `--solr-base-image` | `solr:9` |
+| `SOLR_BASE_IMAGE` | `--solr-base-image` | `solr:10` |
 | `SOLR_MODULES`    | `--solr-modules`    | `extraction,langid,ltr,analysis-extras` |
 
 ### Add third party Solr modules and libraries

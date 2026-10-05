@@ -1,7 +1,7 @@
 #ddev-generated
 services:
   solr:
-    image: ${SOLR_BASE_IMAGE:-solr:9}-${DDEV_SITENAME}-built
+    image: ${SOLR_BASE_IMAGE:-solr:10}-${DDEV_SITENAME}-built
     build:
       dockerfile_inline: |
         ARG SOLR_BASE_IMAGE="scratch"
@@ -15,7 +15,7 @@ services:
         RUN sed -i "/\$$rootScope.exceptions = {};/a \$$scope.username = 'solr'; \$$scope.password = 'SolrRocks';" /opt/solr/server/solr-webapp/webapp/js/angular/controllers/login.js
         USER solr
       args:
-        SOLR_BASE_IMAGE: ${SOLR_BASE_IMAGE:-solr:9}
+        SOLR_BASE_IMAGE: ${SOLR_BASE_IMAGE:-solr:10}
     container_name: ddev-${DDEV_SITENAME}-solr
     expose:
       - 8983
@@ -45,7 +45,7 @@ services:
       - -c
       - |
         set -eu -o pipefail
-        docker-entrypoint.sh solr start -c -Dlog4j.configurationFile=/opt/solr/server/resources/log4j2-console.xml
+        docker-entrypoint.sh solr start -Dlog4j.configurationFile=/opt/solr/server/resources/log4j2-console.xml
         solr zk cp file:/mnt/ddev_config/solr/security.json zk:/security.json -z localhost:9983
         cd /mnt/ddev_config/solr/configsets
         for dir in */; do
@@ -54,19 +54,19 @@ services:
             echo "uploading configset $$dir"
             solr zk upconfig -n "$$dir" -d "$$dir" -z localhost:9983
             echo "creating collection $$dir"
-            solr create -c "$$dir" -n "$$dir" -shards 1 -replicationFactor 1 || true
+            solr create -c "$$dir" -n "$$dir" -shards 1 -rf 1 || true
           fi
         done
         cd -
         solr stop > /dev/null
-        exec solr-foreground -c -Dlog4j.configurationFile=/opt/solr/server/resources/log4j2.xml
+        exec solr-foreground -Dlog4j.configurationFile=/opt/solr/server/resources/log4j2.xml
     healthcheck:
       test: ["CMD-SHELL", "curl --fail -s localhost:8983/solr/"]
     x-ddev:
       describe-info: |
         User: solr
         Pass: SolrRocks
-        Image: ${SOLR_BASE_IMAGE:-solr:9}
+        Image: ${SOLR_BASE_IMAGE:-solr:10}
       ssh-shell: bash
 volumes:
   solr:
