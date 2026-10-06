@@ -45,14 +45,9 @@ health_checks() {
   # Check that the techproducts configset can be uploaded and a corresponding collection will be created
   docker cp ddev-${PROJNAME}-solr:/opt/solr/server/solr/configsets/sample_techproducts_configs .ddev/solr/configsets/techproducts
 
+  # The solr healthcheck passes only after the techproducts collection is created
   run ddev restart -y
   assert_success
-
-  # Give the techproducts collection up to a minute to load
-  for _ in {1..20}; do
-    curl -sf -o /dev/null "http://${PROJNAME}.ddev.site:8983/solr/techproducts/select?q=*:*" && break
-    sleep 3
-  done
 
   # Check authenticated read access
   run ddev exec "curl -sf -u solr:SolrRocks http://solr:8983/solr/techproducts/select?q=*:*"
