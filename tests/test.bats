@@ -39,21 +39,19 @@ setup() {
 }
 
 health_checks() {
+  # Expected Solr major version, any version by default
+  local solr_major_version="${1:-[0-9]+}"
+
   # Check that the techproducts configset can be uploaded and a corresponding collection will be created
   docker cp ddev-${PROJNAME}-solr:/opt/solr/server/solr/configsets/sample_techproducts_configs .ddev/solr/configsets/techproducts
 
   run ddev restart -y
   assert_success
 
-  # Wait for Solr to be ready
-  while true; do
-    # Try to reach the Solr admin ping URL
-    if curl --output /dev/null --silent --head --fail http://${PROJNAME}.ddev.site:8983/solr/techproducts/select?q=*:*; then
-      break
-    else
-      echo "Waiting three more seconds for Solr to be ready..." >&3
-      sleep 3 # Wait for 3 seconds before retrying
-    fi
+  # Give the techproducts collection up to a minute to load
+  for _ in {1..20}; do
+    curl -sf -o /dev/null "http://${PROJNAME}.ddev.site:8983/solr/techproducts/select?q=*:*" && break
+    sleep 3
   done
 
   # Check authenticated read access
@@ -88,10 +86,10 @@ health_checks() {
   assert_success
   assert_output --partial "Solr Admin"
 
-  # Make sure `ddev solr` command works
-  run ddev solr
+  # Make sure `ddev solr` command works and runs the expected Solr version
+  run ddev solr version
   assert_success
-  assert_output --partial "COMMAND"
+  assert_output --regexp "(^|[^0-9.])${solr_major_version}\.[0-9]+\.[0-9]+"
 
   # Make sure `ddev solr-zk` command works
   run ddev solr-zk ls /
@@ -102,11 +100,16 @@ health_checks() {
   DDEV_DEBUG=true run ddev solr-admin
   assert_success
   assert_output --partial "FULLURL https://${PROJNAME}.ddev.site:8943"
+}
 
-  # `ddev solr-zk` should work
-  run ddev solr-zk ls /
+install_with_base_image() {
+  echo "# ddev add-on get ${DIR} with $1 base image in $(pwd)" >&3
+  run ddev dotenv set .ddev/.env.solr --solr-base-image "$1"
   assert_success
-  assert_output --partial "security.json"
+  run ddev add-on get "${DIR}"
+  assert_success
+  run ddev restart -y
+  assert_success
 }
 
 teardown() {
@@ -122,7 +125,7 @@ teardown() {
   assert_success
   run ddev restart -y
   assert_success
-  health_checks
+  health_checks 10
 }
 
 # bats test_tags=release
@@ -138,96 +141,18 @@ teardown() {
 
 @test "install from directory Solr 8" {
   set -eu -o pipefail
-
-  echo "⚡ Setting Solr base image to Solr 8.x.x" >&3
-  run ddev dotenv set .ddev/.env.solr --solr-base-image "solr:8"
-  assert_success
-  assert_file_exist .ddev/.env.solr
-
-  echo "# ddev add-on get ${DIR} with project ${PROJNAME} in $(pwd)" >&3
-  run ddev add-on get "${DIR}"
-  assert_success
-
-  run ddev restart -y
-  assert_success
-
-  echo "🔍 Retrieving Solr version..." >&3
-  echo $(ddev solr version) >&3
-  SOLR_VERSION=$(ddev solr version | grep -oE '8\.[0-9]+\.[0-9]+' || { printf "❌ Failed to get Solr version\n" >&2; exit 1; })
-
-  echo "🔍 Retrieved Solr version: '$SOLR_VERSION'" >&3
-
-  # Validate that the version starts with 8.x.x
-  if ! [[ $SOLR_VERSION =~ ^8\.[0-9]+\.[0-9]+$ ]]; then
-    echo "❌ Expected version matching '8.x.x' but got '$SOLR_VERSION'" >&2
-    exit 1
-  fi
-
-  echo "✅ Solr 8.x.x version check passed!" >&3
-
-  health_checks
+  install_with_base_image "solr:8"
+  health_checks 8
 }
 
 @test "install from directory Solr 9" {
   set -eu -o pipefail
-
-  echo "⚡ Setting Solr base image to Solr 9" >&3
-  run ddev dotenv set .ddev/.env.solr --solr-base-image "solr:9"
-  assert_success
-  assert_file_exist .ddev/.env.solr
-
-  echo "# ddev add-on get ${DIR} with project ${PROJNAME} in $(pwd)" >&3
-  run ddev add-on get "${DIR}"
-  assert_success
-
-  run ddev restart -y
-  assert_success
-
-  echo "🔍 Retrieving Solr version..." >&3
-  echo $(ddev solr --version) >&3
-  SOLR_VERSION=$(ddev solr --version | grep -oE '9\.[0-9]+\.[0-9]+' || { printf "❌ Failed to get Solr version\n" >&2; exit 1; })
-
-  echo "🔍 Retrieved Solr version: '$SOLR_VERSION'" >&3
-
-  # Validate that the version starts with 9.x.x
-  if ! [[ $SOLR_VERSION =~ ^9\.[0-9]+\.[0-9]+$ ]]; then
-    echo "❌ Expected version matching '9.x.x' but got '$SOLR_VERSION'" >&2
-    exit 1
-  fi
-
-  echo "✅ Solr 9.x.x version check passed!" >&3
-
-  health_checks
+  install_with_base_image "solr:9"
+  health_checks 9
 }
 
 @test "install from directory Solr 10" {
   set -eu -o pipefail
-
-  echo "⚡ Setting Solr base image to Solr 10" >&3
-  run ddev dotenv set .ddev/.env.solr --solr-base-image "solr:10"
-  assert_success
-  assert_file_exist .ddev/.env.solr
-
-  echo "# ddev add-on get ${DIR} with project ${PROJNAME} in $(pwd)" >&3
-  run ddev add-on get "${DIR}"
-  assert_success
-
-  run ddev restart -y
-  assert_success
-
-  echo "🔍 Retrieving Solr version..." >&3
-  echo $(ddev solr --version) >&3
-  SOLR_VERSION=$(ddev solr --version | grep -oE '10\.[0-9]+\.[0-9]+' || { printf "❌ Failed to get Solr version\n" >&2; exit 1; })
-
-  echo "🔍 Retrieved Solr version: '$SOLR_VERSION'" >&3
-
-  # Validate that the version starts with 10.x.x
-  if ! [[ $SOLR_VERSION =~ ^10\.[0-9]+\.[0-9]+$ ]]; then
-    echo "❌ Expected version matching '10.x.x' but got '$SOLR_VERSION'" >&2
-    exit 1
-  fi
-
-  echo "✅ Solr 10.x.x version check passed!" >&3
-
-  health_checks
+  install_with_base_image "solr:10"
+  health_checks 10
 }
