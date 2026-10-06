@@ -13,6 +13,10 @@ services:
         RUN sed -i '/X-Forwarded-/,/-->/ {/<!--/d; /-->/d}' /opt/solr/server/etc/jetty.xml
         # Use predefined values for username/password in Solr Admin UI.
         RUN sed -i "/\$$rootScope.exceptions = {};/a \$$scope.username = 'solr'; \$$scope.password = 'SolrRocks';" /opt/solr/server/solr-webapp/webapp/js/angular/controllers/login.js
+        # Solr 10+ deprecates the basicauth system property in favor of solr.security.auth.basicauth.credentials
+        RUN case "$$(readlink -f /opt/solr)" in */solr-[89].*) ;; *) echo 'SOLR_AUTHENTICATION_OPTS="$${SOLR_AUTHENTICATION_OPTS//-Dbasicauth=/-Dsolr.security.auth.basicauth.credentials=}"' >> /etc/default/solr.in.sh ;; esac
+        # Java 24+ warns about sun.misc.Unsafe usage by libraries of the Solr CLI
+        RUN if java --sun-misc-unsafe-memory-access=allow -version >/dev/null 2>&1; then echo 'SOLR_TOOL_OPTS="$${SOLR_TOOL_OPTS:-} --sun-misc-unsafe-memory-access=allow"' >> /etc/default/solr.in.sh; fi
         USER solr
       args:
         SOLR_BASE_IMAGE: ${SOLR_BASE_IMAGE:-solr:9}
@@ -30,6 +34,8 @@ services:
       #SOLR_HEAP: 1g
       SOLR_AUTH_TYPE: basic
       SOLR_AUTHENTICATION_OPTS: -Dbasicauth=solr:SolrRocks
+      # Explicitly use the default ZooKeeper ACL classes to avoid "OPEN_ACL_UNSAFE" warnings
+      SOLR_ZK_CREDS_AND_ACLS: -DzkACLProvider=org.apache.solr.common.cloud.DefaultZkACLProvider -DzkCredentialsInjector=org.apache.solr.common.cloud.DefaultZkCredentialsInjector
       # needed for Drupal Search API Solr
       SOLR_MODULES: ${SOLR_MODULES-extraction,langid,ltr,analysis-extras}
       VIRTUAL_HOST: ${DDEV_HOSTNAME}
