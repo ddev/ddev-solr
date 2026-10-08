@@ -8,7 +8,6 @@ project_files:
 
 pre_install_actions:
   - |
-    #ddev-nodisplay
     #ddev-description:Removing old Dockerfile
     file="${DDEV_APPROOT}/.ddev/solr/Dockerfile"
     if [ -f "${file}" ]; then
