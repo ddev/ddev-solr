@@ -30,6 +30,8 @@ setup() {
   export TESTDIR=$(mktemp -d ~/tmp/${PROJNAME}.XXXXXX)
   export DDEV_NONINTERACTIVE=true
   export DDEV_NO_INSTRUMENTATION=true
+  # Default Solr major version, e.g. "9" from ${SOLR_BASE_IMAGE:-solr:9}
+  export DEFAULT_SOLR_VERSION=$(grep -m1 -oE 'SOLR_BASE_IMAGE:-solr:[0-9]+' "${DIR}/docker-compose.solr.yaml" | cut -d: -f3)
   ddev delete -Oy "${PROJNAME}" >/dev/null 2>&1 || true
   cd "${TESTDIR}"
   run ddev config --project-name="${PROJNAME}" --project-tld=ddev.site
@@ -97,14 +99,21 @@ health_checks() {
   assert_output --partial "FULLURL https://${PROJNAME}.ddev.site:8943"
 }
 
-install_with_base_image() {
-  echo "# ddev add-on get ${DIR} with $1 base image in $(pwd)" >&3
-  run ddev dotenv set .ddev/.env.solr --solr-base-image "$1"
-  assert_success
+# Installs the add-on from the directory and runs health checks.
+# Optional argument: Solr major version to use instead of the default.
+install_from_directory() {
+  if [[ -n "${1:-}" ]]; then
+    [[ "$1" != "${DEFAULT_SOLR_VERSION}" ]] || skip "Solr $1 is the default, tested in \"install from directory\""
+    run ddev dotenv set .ddev/.env.solr --solr-base-image "solr:$1"
+    assert_success
+  fi
+  local version="${1:-${DEFAULT_SOLR_VERSION}}"
+  echo "# ddev add-on get ${DIR} with solr:${version} in $(pwd)" >&3
   run ddev add-on get "${DIR}"
   assert_success
   run ddev restart -y
   assert_success
+  health_checks "${version}"
 }
 
 teardown() {
@@ -115,12 +124,7 @@ teardown() {
 
 @test "install from directory" {
   set -eu -o pipefail
-  echo "# ddev add-on get ${DIR} with project ${PROJNAME} in $(pwd)" >&3
-  run ddev add-on get "${DIR}"
-  assert_success
-  run ddev restart -y
-  assert_success
-  health_checks 10
+  install_from_directory
 }
 
 # bats test_tags=release
@@ -136,18 +140,15 @@ teardown() {
 
 @test "install from directory Solr 8" {
   set -eu -o pipefail
-  install_with_base_image "solr:8"
-  health_checks 8
+  install_from_directory 8
 }
 
 @test "install from directory Solr 9" {
   set -eu -o pipefail
-  install_with_base_image "solr:9"
-  health_checks 9
+  install_from_directory 9
 }
 
 @test "install from directory Solr 10" {
   set -eu -o pipefail
-  install_with_base_image "solr:10"
-  health_checks 10
+  install_from_directory 10
 }

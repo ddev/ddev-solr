@@ -172,24 +172,24 @@ Both commands are preconfigured to connect as user `solr` which is the admin acc
 
 ### Using alternate versions of Solr
 
-This addon defaults to installing a preferred version of the [docker Solr image](https://hub.docker.com/_/solr), but can be configured to use a different version via environment variable (`SOLR_BASE_IMAGE`).  For example, if you would like to install the latest Solr 8.11.x, follow the steps below:
+The add-on is based on the official [Solr Docker image](https://hub.docker.com/_/solr) and supports Solr 8, 9 and 10. The default is `solr:9`.
+
+To use a different version, set `SOLR_BASE_IMAGE` to any tag of the Solr image, for example `solr:10`, `solr:9.9` or `solr:8.11`:
 
 ```bash
-# Change image version as appropriate.
-ddev dotenv set .ddev/.env.solr --solr-base-image="solr:8.11"
-
+ddev dotenv set .ddev/.env.solr --solr-base-image="solr:10"
 ddev add-on get ddev/ddev-solr
-
-# remove old solr volume (if this is downgrade)
 ddev stop
+
+# Only when downgrading or skipping a major version (e.g. 8 to 10):
+# remove the Solr volume, Solr can't read indexes from an older major version or a newer one.
+# Your collections are recreated from .ddev/solr/configsets on start, reindex your data afterwards.
 docker volume rm ddev-$(ddev status -j | docker run -i --rm ddev/ddev-utilities jq -r '.raw.name')_solr
 
-# rebuild solr image (required step)
 ddev debug rebuild -s solr
-
 ddev restart
 
-# confirm the new Solr version (expect a value something like 8.11.4)
+# Confirm the new Solr version
 ddev solr version
 ```
 
@@ -220,7 +220,7 @@ All customization options (use with caution):
 
 | Variable          | Flag                | Default   |
 |-------------------|---------------------|-----------|
-| `SOLR_BASE_IMAGE` | `--solr-base-image` | `solr:10` |
+| `SOLR_BASE_IMAGE` | `--solr-base-image` | `solr:9` |
 | `SOLR_MODULES`    | `--solr-modules`    | `extraction,langid,ltr,analysis-extras` |
 
 ### Add third party Solr modules and libraries
