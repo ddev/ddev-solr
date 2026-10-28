@@ -30,6 +30,7 @@ setup() {
   export TESTDIR="$(mktemp -d "${HOME}/tmp/${PROJNAME}.XXXXXX")"
   export DDEV_NONINTERACTIVE=true
   export DDEV_NO_INSTRUMENTATION=true
+  export CI=true
   # Default Solr major version, e.g. "9" from ${SOLR_BASE_IMAGE:-solr:9}
   export DEFAULT_SOLR_VERSION=$(grep -m1 -oE 'SOLR_BASE_IMAGE:-solr:[0-9]+' "${DIR}/docker-compose.solr.yaml" | cut -d: -f3)
   ddev delete -Oy "${PROJNAME}" >/dev/null 2>&1 || true
@@ -43,6 +44,8 @@ setup() {
 health_checks() {
   # Expected Solr major version, any version by default
   local solr_major_version="${1:-[0-9]+}"
+  # Expected admin credentials
+  local credentials="solr:${TEST_SOLR_PASSWORD:-SolrRocks}"
 
   # Check that the techproducts configset can be uploaded and a corresponding collection will be created
   docker cp ddev-${PROJNAME}-solr:/opt/solr/server/solr/configsets/sample_techproducts_configs .ddev/solr/configsets/techproducts
@@ -52,7 +55,7 @@ health_checks() {
   assert_success
 
   # Check authenticated read access
-  run ddev exec "curl -sS --fail-with-body -u solr:SolrRocks http://solr:8983/solr/techproducts/select?q=*:*"
+  run ddev exec "curl -sS --fail-with-body -u ${credentials} http://solr:8983/solr/techproducts/select?q=*:*"
   assert_success
   assert_output --partial "numFound"
 
@@ -61,10 +64,24 @@ health_checks() {
   assert_success
   assert_output --partial "numFound"
 
+  # Check authenticated admin access
+  run ddev exec "curl -sS --fail-with-body -u ${credentials} http://solr:8983/solr/admin/info/system"
+  assert_success
+  assert_output --partial "solr_home"
+
+  # Check that admin access requires authentication
+  run ddev exec "curl -sS -o /dev/null -w '%{http_code}' http://solr:8983/solr/admin/info/system"
+  assert_output "401"
+
   # Make sure the solr admin UI is working
-  run ddev exec "curl -sS --fail-with-body -u solr:SolrRocks http://solr:8983/solr/#"
+  run ddev exec "curl -sS --fail-with-body -u ${credentials} http://solr:8983/solr/#"
   assert_success
   assert_output --partial "Solr Admin"
+
+  # Make sure the solr admin UI login form is prefilled with the credentials
+  run ddev exec -s solr cat /opt/solr/server/solr-webapp/webapp/js/angular/controllers/login.js
+  assert_success
+  assert_output --partial "\$scope.username = 'solr'; \$scope.password = '${credentials#*:}';"
 
   # Make sure the solr admin UI via HTTP from outside is redirected to HTTP /solr/
   run curl -sSIf http://${PROJNAME}.ddev.site:8983
@@ -145,6 +162,24 @@ teardown() {
   run ddev add-on get "${GITHUB_REPO}"
   assert_success
   run ddev restart -y
+  assert_success
+  health_checks
+}
+
+@test "install from directory with custom password" {
+  set -eu -o pipefail
+  export TEST_SOLR_PASSWORD=SolrRocksSolrRocks
+  echo "# ddev add-on get ${DIR} with custom password in $(pwd)" >&3
+  run ddev add-on get "${DIR}"
+  assert_success
+  run ddev restart -y
+  assert_success
+  # Change the password in a running project
+  run ddev dotenv set .ddev/.env.solr --solr-password="${TEST_SOLR_PASSWORD}"
+  assert_success
+  run ddev restart -s solr
+  assert_success
+  run ddev exec "curl -sS --fail-with-body -u solr:${TEST_SOLR_PASSWORD} http://solr:8983/solr/admin/info/system"
   assert_success
   health_checks
 }
