@@ -13,8 +13,13 @@ services:
         RUN sed -i '/X-Forwarded-/,/-->/ {/<!--/d; /-->/d}' /opt/solr/server/etc/jetty.xml
         # Use predefined values for username/password in Solr Admin UI.
         RUN sed -i "/\$$rootScope.exceptions = {};/a \$$scope.username = 'solr'; \$$scope.password = 'SolrRocks';" /opt/solr/server/solr-webapp/webapp/js/angular/controllers/login.js
-        # Solr 10+ deprecates the basicauth system property in favor of solr.security.auth.basicauth.credentials
-        RUN case "$$(readlink -f /opt/solr)" in */solr-[89].*) ;; *) echo 'SOLR_AUTHENTICATION_OPTS="$${SOLR_AUTHENTICATION_OPTS//-Dbasicauth=/-Dsolr.security.auth.basicauth.credentials=}"' >> /etc/default/solr.in.sh ;; esac
+        # Solr 10+ deprecates the basicauth system property in favor of solr.security.auth.basicauth.credentials.
+        # Solr 10.1+ sends it only after a 401 challenge, which fails for requests with a body (e.g. "solr create"),
+        # bin/solr sources this file, so also pass the credentials explicitly to the commands that accept them.
+        RUN case "$$(readlink -f /opt/solr)" in */solr-[89].*) ;; *) printf '%s\n' \
+          'SOLR_AUTHENTICATION_OPTS="$${SOLR_AUTHENTICATION_OPTS//-Dbasicauth=/-Dsolr.security.auth.basicauth.credentials=}"' \
+          'case "$${1:-}" in api|assert|auth|config|create|delete|export|healthcheck|package|post|postlogs|status|stream|snapshot-*) set -- "$$@" --credentials "$${SOLR_AUTHENTICATION_OPTS#*=}" ;; esac' \
+          >> /etc/default/solr.in.sh ;; esac
         # Java 24+ warns about sun.misc.Unsafe usage by libraries of the Solr CLI
         RUN if java --sun-misc-unsafe-memory-access=allow -version >/dev/null 2>&1; then echo 'SOLR_TOOL_OPTS="$${SOLR_TOOL_OPTS:-} --sun-misc-unsafe-memory-access=allow"' >> /etc/default/solr.in.sh; fi
         USER solr
@@ -64,8 +69,10 @@ services:
             if [[ "$$dir" != "*" ]]; then
               echo "uploading configset $$dir"
               solr zk upconfig -n "$$dir" -d "$$dir" -z localhost:9983
-              echo "creating collection $$dir"
-              solr create -c "$$dir" -n "$$dir" -shards 1 -rf 1 || true
+              if ! solr zk ls "/collections/$$dir" -z localhost:9983 >/dev/null 2>&1; then
+                echo "creating collection $$dir"
+                solr create -c "$$dir" -n "$$dir" -shards 1 -rf 1
+              fi
             fi
           done
           touch /tmp/solr-ready

@@ -52,34 +52,34 @@ health_checks() {
   assert_success
 
   # Check authenticated read access
-  run ddev exec "curl -sf -u solr:SolrRocks http://solr:8983/solr/techproducts/select?q=*:*"
+  run ddev exec "curl -sS --fail-with-body -u solr:SolrRocks http://solr:8983/solr/techproducts/select?q=*:*"
   assert_success
   assert_output --partial "numFound"
 
   # Check unauthenticated read access
-  run ddev exec "curl -sf http://solr:8983/solr/techproducts/select?q=*:*"
+  run ddev exec "curl -sS --fail-with-body http://solr:8983/solr/techproducts/select?q=*:*"
   assert_success
   assert_output --partial "numFound"
 
   # Make sure the solr admin UI is working
-  run ddev exec "curl -sf -u solr:SolrRocks http://solr:8983/solr/#"
+  run ddev exec "curl -sS --fail-with-body -u solr:SolrRocks http://solr:8983/solr/#"
   assert_success
   assert_output --partial "Solr Admin"
 
   # Make sure the solr admin UI via HTTP from outside is redirected to HTTP /solr/
-  run curl -sfI http://${PROJNAME}.ddev.site:8983
+  run curl -sSIf http://${PROJNAME}.ddev.site:8983
   assert_success
   assert_output --partial "HTTP/1.1 302"
   assert_output --regexp "Location: (http://${PROJNAME}\\.ddev\\.site:8983)?/solr/"
 
   # Make sure the solr admin UI via HTTPS from outside is redirected to HTTPS /solr/
-  run curl -sfI https://${PROJNAME}.ddev.site:8943
+  run curl -sSIf https://${PROJNAME}.ddev.site:8943
   assert_success
   assert_output --partial "HTTP/2 302"
   assert_output --regexp "[Ll]ocation: (https://${PROJNAME}\\.ddev\\.site:8943)?/solr/"
 
   # Make sure the solr admin UI is working from outside
-  run curl -sfL https://${PROJNAME}.ddev.site:8943
+  run curl -sSL --fail-with-body https://${PROJNAME}.ddev.site:8943
   assert_success
   assert_output --partial "Solr Admin"
 
@@ -87,6 +87,11 @@ health_checks() {
   run ddev solr version
   assert_success
   assert_output --regexp "(^|[^0-9.])${solr_major_version}\.[0-9]+\.[0-9]+"
+
+  # Make sure `ddev solr` command works with authentication
+  run ddev solr create -c ddev-test
+  assert_success
+  assert_output --partial "Created collection 'ddev-test'"
 
   # Make sure `ddev solr-zk` command works
   run ddev solr-zk ls /
