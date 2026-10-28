@@ -9,7 +9,6 @@
 - [Installation](#installation)
 - [Usage](#usage)
   - [Solr Admin credentials](#solr-admin-credentials)
-  - [Changing Solr password](#changing-solr-password)
   - [Create a collection](#create-a-collection)
   - [Solr command line client](#solr-command-line-client)
 - [Advanced Customization](#advanced-customization)
@@ -64,53 +63,16 @@ a simple pre-configured [`security.json`](solr/security.json) to provide such a 
 | Username | `solr`      |
 | Password | `SolrRocks` |
 
+To change the password (e.g. to `SolrRocksSolrRocks`):
+
+```bash
+ddev dotenv set .ddev/.env.solr --solr-password=SolrRocksSolrRocks
+ddev restart -s solr
+```
+
+The new password is used by the Solr Admin UI login form, `ddev solr` and `ddev solr-zk`, and its hash replaces `${SOLR_PASSWORD_HASH}` in [`security.json`](solr/security.json) on every start. Don't use spaces, `'` or `\` in it. Make sure to commit the `.ddev/.env.solr` file to version control.
+
 To access the Solr container from DDEV's web container, use `http://solr:8983`.
-
-### Changing Solr password
-
-To change the Solr admin password (e.g. to `SolrRocksSolrRocks`):
-
-1. In `.ddev/docker-compose.solr.yaml`, remove the `#ddev-generated` line. Update the password in both `dockerfile_inline` and `SOLR_AUTHENTICATION_OPTS`:
-
-    ```diff
-    -#ddev-generated
-    services:
-      solr:
-        build:
-          dockerfile_inline: |
-            ...
-            # Use predefined values for username/password in Solr Admin UI.
-    -       RUN sed -i "/\$$rootScope.exceptions = {};/a \$$scope.username = 'solr'; \$$scope.password = 'SolrRocks';" /opt/solr/server/solr-webapp/webapp/js/angular/controllers/login.js
-    +       RUN sed -i "/\$$rootScope.exceptions = {};/a \$$scope.username = 'solr'; \$$scope.password = 'SolrRocksSolrRocks';" /opt/solr/server/solr-webapp/webapp/js/angular/controllers/login.js
-        ...
-        environment:
-          ...
-    -     SOLR_AUTHENTICATION_OPTS: -Dbasicauth=solr:SolrRocks
-    +     SOLR_AUTHENTICATION_OPTS: -Dbasicauth=solr:SolrRocksSolrRocks
-          ...
-    ```
-
-2. In `.ddev/solr/security.json`, remove the `#ddev-generated` line and replace the hashed password string. You can generate a new one using tools like [clemente-biondo.github.io](https://github.com/clemente-biondo/clemente-biondo.github.io):
-
-    ```diff
-    {
-    - "#ddev-generated":true,
-      "authentication":{
-        "class":"solr.BasicAuthPlugin",
-        "credentials":{
-    -     "solr":"IV0EHq1OnNrj6gvRCwvFwTrZ1+z1oBbnQdiVC3otuq0= Ndd7LKvVBAaZIF0QAVi1ekCfAJXr1GGfLtRUXhgrF8c="
-    +     "solr":"9MCwAcWQZyUKRY1AUuemHRws4/PIqtwjrpw3D4GCQHo= dGszejkxYm0yYTVuNzBuZQ=="
-        },
-        "blockUnknown":false
-      },
-      ...
-    ```
-
-3. Run:
-
-    ```bash
-    ddev stop && ddev debug rebuild -s solr && ddev start
-    ```
 
 ## Create a collection
 
@@ -118,7 +80,7 @@ Creating collections require that the configset to be used by this collection
 has been uploaded within a "trusted context". This is ensured if you use the
 admin UI with the predefined admin account `solr` or if you use the solr command
 line client `ddev solr-zk`. If you use any other http client and the API, ensure
-that you use basic authentocation with the prconfigured admin account
+that you use basic authentication with the preconfigured admin account
 `solr:SolrRocks`.
 
 The PHP solarium library provides all required methods as well.
@@ -166,7 +128,7 @@ settings. So the `-z` option can be omitted:
 ddev solr-zk
 ```
 
-Both commands are preconfigured to connect as user `solr` which is the admin account.
+Both commands are preconfigured to connect with the admin account.
 
 ## Advanced Customization
 
@@ -179,14 +141,12 @@ To use a different version, set `SOLR_BASE_IMAGE` to any tag of the Solr image, 
 ```bash
 ddev dotenv set .ddev/.env.solr --solr-base-image="solr:10"
 ddev add-on get ddev/ddev-solr
-ddev stop
 
 # Only when downgrading or skipping a major version (e.g. 8 to 10):
 # remove the Solr volume, Solr can't read indexes from an older major version or a newer one.
 # Your collections are recreated from .ddev/solr/configsets on start, reindex your data afterwards.
-docker volume rm ddev-$(ddev status -j | docker run -i --rm ddev/ddev-utilities jq -r '.raw.name')_solr
+ddev utility delete-volume solr
 
-ddev debug rebuild -s solr
 ddev restart
 
 # Confirm the new Solr version
@@ -222,6 +182,7 @@ All customization options (use with caution):
 |-------------------|---------------------|-----------|
 | `SOLR_BASE_IMAGE` | `--solr-base-image` | `solr:9` |
 | `SOLR_MODULES`    | `--solr-modules`    | `extraction,langid,ltr,analysis-extras` |
+| `SOLR_PASSWORD`   | `--solr-password`   | `SolrRocks` |
 
 ### Add third party Solr modules and libraries
 

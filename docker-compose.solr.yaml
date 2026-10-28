@@ -6,13 +6,14 @@ services:
       dockerfile_inline: |
         ARG SOLR_BASE_IMAGE="scratch"
         FROM $$SOLR_BASE_IMAGE
+        ARG SOLR_PASSWORD
         # Fix HTTPS redirect to HTTP which breaks URL for Solr Admin UI.
         # The reason for this problem is that Solr uses Jetty as a webserver.
         # Jetty has X-Forwarded- headers disabled by default, enable them here:
         USER root
         RUN sed -i '/X-Forwarded-/,/-->/ {/<!--/d; /-->/d}' /opt/solr/server/etc/jetty.xml
         # Use predefined values for username/password in Solr Admin UI.
-        RUN sed -i "/\$$rootScope.exceptions = {};/a \$$scope.username = 'solr'; \$$scope.password = 'SolrRocks';" /opt/solr/server/solr-webapp/webapp/js/angular/controllers/login.js
+        RUN sed -i "/\$$rootScope.exceptions = {};/a \$$scope.username = 'solr'; \$$scope.password = '$$SOLR_PASSWORD';" /opt/solr/server/solr-webapp/webapp/js/angular/controllers/login.js
         # Solr 10+ deprecates the basicauth system property in favor of solr.security.auth.basicauth.credentials.
         # Solr 10.1+ sends it only after a 401 challenge, which fails for requests with a body (e.g. "solr create"),
         # bin/solr sources this file, so also pass the credentials explicitly to the commands that accept them.
@@ -25,6 +26,7 @@ services:
         USER solr
       args:
         SOLR_BASE_IMAGE: ${SOLR_BASE_IMAGE:-solr:9}
+        SOLR_PASSWORD: ${SOLR_PASSWORD:-SolrRocks}
     container_name: ddev-${DDEV_SITENAME}-solr
     expose:
       - 8983
@@ -40,7 +42,8 @@ services:
       SOLR_OPTS: -Djute.maxbuffer=50000000
       #SOLR_HEAP: 1g
       SOLR_AUTH_TYPE: basic
-      SOLR_AUTHENTICATION_OPTS: -Dbasicauth=solr:SolrRocks
+      SOLR_PASSWORD: ${SOLR_PASSWORD:-SolrRocks}
+      SOLR_AUTHENTICATION_OPTS: -Dbasicauth=solr:${SOLR_PASSWORD:-SolrRocks}
       # Explicitly use the default ZooKeeper ACL classes to avoid "OPEN_ACL_UNSAFE" warnings
       SOLR_ZK_CREDS_AND_ACLS: -DzkACLProvider=org.apache.solr.common.cloud.DefaultZkACLProvider -DzkCredentialsInjector=org.apache.solr.common.cloud.DefaultZkCredentialsInjector
       # needed for Drupal Search API Solr
@@ -62,7 +65,11 @@ services:
         # Initialize Solr in the background once it is up, the healthcheck passes after that
         (
           until curl -s -o /dev/null localhost:8983/solr/; do sleep 1; done
-          solr zk cp file:/mnt/ddev_config/solr/security.json zk:/security.json -z localhost:9983
+          # Fill in the password hash in security.json: base64(sha256(sha256(salt + password))) base64(salt)
+          salt="$$(openssl rand -base64 32)"
+          hash="$$({ base64 -d <<< "$$salt"; printf %s "$$SOLR_PASSWORD"; } | openssl dgst -sha256 -binary | openssl dgst -sha256 -binary | base64)"
+          sed "s|\$${SOLR_PASSWORD_HASH}|$$hash $$salt|" /mnt/ddev_config/solr/security.json > /tmp/security.json
+          solr zk cp file:/tmp/security.json zk:/security.json -z localhost:9983
           cd /mnt/ddev_config/solr/configsets
           for dir in */; do
             dir="$${dir%/}"
@@ -83,7 +90,7 @@ services:
     x-ddev:
       describe-info: |
         User: solr
-        Pass: SolrRocks
+        Pass: ${SOLR_PASSWORD:-SolrRocks}
         Image: ${SOLR_BASE_IMAGE:-solr:9}
       ssh-shell: bash
 volumes:
